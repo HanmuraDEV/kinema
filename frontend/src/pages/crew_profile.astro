@@ -1,0 +1,139 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const profile = {
+  name: 'Denis Villeneuve',
+  role: 'Director • Escritor • Productor',
+  bio: 'Aclamado cineasta franco-canadiense conocido por su estilo visual distintivo y narrativas complejas. Su filmografía abarca desde thrillers psicológicos íntimos hasta epopeyas de ciencia ficción de gran escala, siempre manteniendo un enfoque profundo en la condición humana.',
+  image:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuBq16XtcjeC5ISeIRm5GnOazxRJgvIv_IGCSkqgbPkCvyiOs3V0br_htTW8i4apI6m65VP3k2eFRysStt5Ls5uu47RRKKQ216h2AZJsqbPn67Lo5weHOzgLw6AtAN6PiuymCjAdHURi6x26bJucKtYVxmsm9N-uU0_BnTqAE5_X9L78jBMiOkWkMIaxTQUcs6nF9r3yPlKxEr6L9qQlye0T7Gc8bL_fCN5i92nZXz-q4bge2nGDudhBjwrmm6w-XhTHHRXc0thZvsE',
+  genres: ['Ciencia Ficción', 'Thriller', 'Drama'],
+  careerClusters: [
+    { label: 'Sci-Fi Complejo', value: '80%', color: 'bg-primary' },
+    { label: 'Thriller Psicológico', value: '15%', color: 'bg-secondary' },
+    { label: 'Drama', value: '5%', color: 'bg-surface-container-highest' },
+  ],
+  filmography: [
+    {
+      title: 'Dune: Parte Dos',
+      year: '2024',
+      credit: 'Director, Escritor',
+      rating: '4.8',
+      image:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCh6mnuesEInOMKGGqf4aOfRKSq_lZLVNy1-y-jDVx5eWGlxQxfBOix0e2aUoydePDCLv0HQ0ssoNfAFpl4HaAKLpF629zWhjT7APzAsPDr3YR24QfC7D9_NtHwCgRgFFt85sBuXgqVUZUL8inMTGtU34RgY32OSEf3p5zi04nSstuqGHbBcR1a0RnkIVvI4JIp_G32AFhGjP4ZIDeFm3MVKG2s_Tk1rHF5GdkmAJBwoI1LWqvO5zJIcKHZpCHAguXood6T-OCMrlwQ',
+    },
+    {
+      title: 'Dune: Parte Uno',
+      year: '2021',
+      credit: 'Director, Escritor',
+      rating: '4.6',
+      image:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCVP76yA8AD1dt-d_ymIczk1Y68LSl1ETj7rSQR_ugXyu8u7tnBjMto4R-FQdXXzAlmeoH5Em1GBwIiGXERmrYOs_p6zHYM_rMovjlgSF3PL4lBHreXKDvVhnn0n4Rqtkp3-H7WX8z7t4RdlqCOr0OzOgBBreWJhCRkWWoCwkFy48lWVagqcPPN68XHHIdw6ZETrx4RkejiH7N-02eORzSp-y6hvGM_U_v0J5XPZt5qNWIDVdbJ-_Fa7GUS92ug66pcdE4XHttdG6U',
+    },
+    {
+      title: 'Blade Runner 2049',
+      year: '2017',
+      credit: 'Director',
+      rating: '4.7',
+      image:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuAHQy1VFFZw-tQmZEl5jph1vInfpxB5IPfkEsmYcn6Is2jWMsEZ67hrGjpy5d4_GiV0Q9qEBJnw72sQ0EUKGNQgHfG3qyoSF2o25ZyX_do59hL9BloPLk0TywLq3gqUKUSqdRzoc66hR4b_CDPdUAlS9GyPq9f4VFjnSMPerXXIigutQhy867k0eNeDZK1CTLtEijmivaWD7is2tp7cbkJ4pI_Dg-9Y-MUq5Y8DxhcjePB3Kt__BbBj_099mA-2KSWkNpBhXCwca7w',
+    },
+    {
+      title: 'La Llegada',
+      year: '2016',
+      credit: 'Director',
+      rating: '4.5',
+      image:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuBdvEaWks2PNbF2TXEjKJnL7pefSvC4BeROUj0zXmFq0IXiE1Dj4Hr-mGwn3xJBqpeVVDNa-HZxA8QIaoVgI4Talpurs2yRPimFx07kiqDsBIAgNHOl6McrAO70EhFKTpTN_hK1_xnG7pb3jrryUWVeLOyvANmwWAeqGPQmaiyBp4xYy9I0WF0d2Z2wGk3kErTAlRSM7p6jymPl-9iZ-KHcAsnkeA32bl2Pxs6OR56GY_gr7p8yf9sLysHsRnt3CT438eGbioJrGFg',
+    },
+  ],
+};
+---
+
+<Layout title="Kinema - Perfil del Reparto y Equipo">
+  <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-gutter">
+    <header class="flex flex-col md:flex-row items-center md:items-start gap-gutter mb-12">
+      <div class="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden">
+        <img alt={profile.name} class="w-full h-full object-cover" src={profile.image} />
+      </div>
+
+      <div class="text-center md:text-left flex-1 space-y-4">
+        <h1 class="font-headline-xl text-headline-xl text-on-background mt-4 md:mt-0">{profile.name}</h1>
+        <p class="font-label-md text-label-md text-primary tracking-widest uppercase">{profile.role}</p>
+        <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl leading-relaxed">{profile.bio}</p>
+        <div class="flex flex-wrap justify-center md:justify-start gap-2 pt-4">
+          {profile.genres.map((genre) => (
+            <span class="px-4 py-2 bg-primary-container/30 text-on-primary-container rounded font-label-sm text-label-sm">
+              {genre}
+            </span>
+          ))}
+        </div>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+      <section class="md:col-span-4 py-6 border-b md:border-b-0 md:border-r border-outline-variant/30 md:pr-8">
+        <h2 class="font-headline-md text-headline-md mb-6 flex items-center gap-2 text-on-background">
+          <span class="material-symbols-outlined text-primary">pie_chart</span>
+          Clusters de Carrera
+        </h2>
+
+        <div class="relative w-48 h-48 mx-auto flex items-center justify-center">
+          <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <circle class="text-surface-container-highest" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="20"></circle>
+            <circle class="text-primary transition-all duration-1000 ease-out" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="50.24" stroke-width="20"></circle>
+            <circle class="text-secondary transition-all duration-1000 ease-out delay-300" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="213.52" stroke-width="20"></circle>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="font-headline-md text-headline-md font-bold text-primary">80%</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant text-center leading-tight">Sci-Fi<br />Complejo</span>
+          </div>
+        </div>
+
+        <div class="mt-8 space-y-3">
+          {profile.careerClusters.map((item) => (
+            <div class="flex items-center justify-between font-label-md text-label-md border-b border-outline-variant/20 pb-2">
+              <div class="flex items-center gap-2">
+                <span class={`w-3 h-3 rounded-full ${item.color}`}></span>
+                <span>{item.label}</span>
+              </div>
+              <span class="text-on-surface-variant">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="md:col-span-8 bg-surface/50 rounded p-6 shadow-[0_15px_30px_-5px_rgba(0,106,104,0.05)] border border-white/40 backdrop-blur-md">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="font-headline-md text-headline-md flex items-center gap-2 text-on-background">
+            <span class="material-symbols-outlined text-secondary">movie</span>
+            Filmografía Destacada
+          </h2>
+          <span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-3 py-1 rounded">11 Películas</span>
+        </div>
+
+        <div class="space-y-4">
+          {profile.filmography.map((movie) => (
+            <div class="group flex items-center gap-4 p-4 rounded hover:bg-white/80 transition-all duration-300 border border-transparent hover:border-white/50 cursor-pointer">
+              <div class="w-16 h-24 bg-surface-container-highest rounded overflow-hidden relative">
+                <img alt={movie.title} class="w-full h-full object-cover" src={movie.image} />
+                <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors"></div>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-label-md text-label-md text-on-background text-lg mb-1 group-hover:text-primary transition-colors">{movie.title}</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant text-sm">{movie.year} • {movie.credit}</p>
+              </div>
+              <div class="flex flex-col items-end gap-1">
+                <span class="font-label-md text-label-md text-tertiary">★ {movie.rating}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <button class="w-full mt-6 py-3 rounded bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md transition-colors">
+          Ver Filmografía Completa
+        </button>
+      </section>
+    </div>
+  </main>
+</Layout>

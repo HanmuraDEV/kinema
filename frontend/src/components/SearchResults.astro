@@ -1,0 +1,50 @@
+---
+interface ResultItem {
+  title: string;
+  year: string;
+  rating: string;
+  image: string;
+}
+
+interface Props {
+  results?: ResultItem[];
+}
+
+const { results = [] } = Astro.props;
+---
+
+<section class="min-w-0">
+  <div class="flex justify-between items-center mb-6 gap-3 flex-wrap">
+    <span class="font-label-md text-label-md text-on-surface-variant">
+      Mostrando resultados para <strong class="text-secondary">"Estética Neón"</strong>
+    </span>
+    <button class="font-label-md text-label-md text-secondary flex items-center gap-1 hover:opacity-80">
+      <span class="material-symbols-outlined text-sm">sort</span>
+      Ordenar
+    </button>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+    {results.map((movie) => (
+      <div class="group relative rounded-lg overflow-hidden ambient-shadow-secondary bg-white">
+        <div class="aspect-[2/3] w-full bg-surface-container-high relative overflow-hidden">
+          <img
+            alt={movie.title}
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            src={movie.image}
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+            <h3 class="font-headline-md text-headline-md text-white">{movie.title}</h3>
+            <div class="flex justify-between items-center mt-1">
+              <span class="font-label-sm text-label-sm text-white/80">{movie.year}</span>
+              <span class="font-label-sm text-label-sm text-tertiary-container flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                {movie.rating}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

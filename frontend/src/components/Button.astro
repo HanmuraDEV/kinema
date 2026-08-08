@@ -1,0 +1,60 @@
+---
+interface Props {
+  class?: string;
+  href?: string;
+  icon?: string;
+  iconFilled?: boolean;
+  label?: string;
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'ghost';
+}
+
+const {
+  class: className = '',
+  href = '#',
+  icon = '',
+  iconFilled = false,
+  label = '',
+  type = 'button',
+  variant = 'primary',
+} = Astro.props;
+
+const variantClasses = {
+  primary: 'bg-primary text-on-primary hover:opacity-90',
+  secondary: 'bg-transparent text-secondary border border-outline hover:bg-surface-variant',
+  tertiary: 'bg-tertiary text-on-tertiary hover:opacity-90',
+  ghost: 'bg-transparent text-secondary hover:text-primary',
+};
+
+const iconStyle = iconFilled
+  ? "font-variation-settings: 'FILL' 1;"
+  : "font-variation-settings: 'FILL' 0;";
+---
+
+{
+  href && href !== '#' ? (
+    <a
+      class:list={[
+        'inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 font-label-md text-label-md transition-colors',
+        variantClasses[variant],
+        className,
+      ]}
+      href={href}
+    >
+      {icon ? <span class="material-symbols-outlined text-[18px]" style={iconStyle}>{icon}</span> : null}
+      {label ? <span>{label}</span> : <slot />}
+    </a>
+  ) : (
+    <button
+      class:list={[
+        'inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 font-label-md text-label-md transition-colors',
+        variantClasses[variant],
+        className,
+      ]}
+      type={type}
+    >
+      {icon ? <span class="material-symbols-outlined text-[18px]" style={iconStyle}>{icon}</span> : null}
+      {label ? <span>{label}</span> : <slot />}
+    </button>
+  )
+}

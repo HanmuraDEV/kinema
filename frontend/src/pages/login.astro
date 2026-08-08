@@ -1,0 +1,156 @@
+---
+import '../styles/global.css';
+import Button from '../components/Button.astro';
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <title>Kinema - Auth & Onboarding</title>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+
+      .progress-flat {
+        background: #006a68;
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite linear;
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased selection:bg-secondary-container selection:text-on-secondary-container">
+    <main class="relative flex flex-grow items-center justify-center overflow-hidden p-margin-mobile md:p-margin-desktop">
+      <div class="absolute left-[-10%] top-[-10%] h-[50vw] w-[50vw] rounded-full bg-secondary-container/20 blur-[100px] -z-10"></div>
+      <div class="absolute bottom-[-10%] right-[-10%] h-[40vw] w-[40vw] rounded-full bg-primary-container/20 blur-[80px] -z-10"></div>
+
+      <div class="relative z-10 grid w-full max-w-5xl grid-cols-1 gap-12 md:grid-cols-2 md:gap-24 md:divide-x md:divide-outline-variant/30">
+        <section class="flex flex-col justify-center">
+          <div class="mb-8 text-center md:text-left">
+            <h1 class="mb-2 font-headline-xl text-headline-xl text-secondary">Kinema</h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant">Entra a tu diario de cine personal.</p>
+          </div>
+
+          <div class="mb-8 flex gap-4 border-b border-outline-variant/30 pb-2">
+            <button class="border-b-2 border-secondary px-2 pb-2 font-label-md text-label-md text-secondary transition-colors">
+              Iniciar Sesión
+            </button>
+            <button class="px-2 pb-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:text-secondary">
+              Registrarse
+            </button>
+          </div>
+
+          <form class="space-y-6">
+            <div>
+              <label class="mb-2 block font-label-sm text-label-sm text-on-surface-variant" for="email">Correo Electrónico</label>
+              <input
+                id="email"
+                class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-on-surface transition-colors focus:border-secondary focus:ring-1 focus:ring-secondary"
+                type="email"
+                placeholder="ejemplo@correo.com"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="mb-2 block font-label-sm text-label-sm text-on-surface-variant" for="password">Contraseña</label>
+              <input
+                id="password"
+                class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-on-surface transition-colors focus:border-secondary focus:ring-1 focus:ring-secondary"
+                type="password"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <div class="mt-4 flex items-center justify-between">
+              <label class="flex cursor-pointer items-center gap-2">
+                <input class="rounded border-outline-variant bg-surface-container-lowest text-secondary focus:ring-secondary-container" type="checkbox" />
+                <span class="font-label-sm text-label-sm text-on-surface-variant">Recordarme</span>
+              </label>
+              <a class="font-label-sm text-label-sm text-secondary hover:underline" href="#">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <Button class="mt-6 w-full" label="Entrar a Kinema" variant="primary" />
+          </form>
+        </section>
+
+        <section class="flex flex-col justify-center md:pl-24">
+          <div id="upload-state" class="flex h-full flex-col items-center justify-center text-center">
+            <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-secondary-container/30 text-secondary">
+              <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">upload_file</span>
+            </div>
+            <h2 class="mb-4 font-headline-md text-headline-md text-on-surface">¿Vienes de Letterboxd?</h2>
+            <p class="mb-8 max-w-sm font-body-md text-body-md text-on-surface-variant">
+              No pierdas tu historial. Sube tu archivo CSV exportado y nosotros organizaremos tus películas mágicamente.
+            </p>
+
+            <label class="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-secondary px-8 py-3 font-label-md text-label-md text-on-secondary transition-colors hover:bg-secondary/90">
+              <span class="material-symbols-outlined">attach_file</span>
+              Seleccionar archivo CSV
+              <input accept=".csv" class="hidden" type="file" onchange="simulateUpload()" />
+            </label>
+            <p class="mt-4 font-label-sm text-label-sm text-on-surface-variant/70">Solo archivos .csv hasta 10MB</p>
+          </div>
+
+          <div id="progress-state" class="hidden h-full w-full flex-col items-center justify-center text-center">
+            <h3 class="mb-2 font-headline-md text-headline-md text-secondary">Importando tu historial...</h3>
+            <p class="mb-8 font-body-md text-body-md text-on-surface-variant">Organizando valoraciones y diarios</p>
+            <div class="mb-4 h-4 w-full overflow-hidden rounded-full bg-surface-container-highest">
+              <div class="progress-flat h-full w-3/4 rounded-full"></div>
+            </div>
+            <p class="font-label-sm text-label-sm font-bold text-secondary">75% Completado</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="flex w-full flex-col items-center justify-between gap-gutter border-t border-outline-variant/30 bg-background px-margin-desktop py-12 md:flex-row">
+      <div class="font-headline-md text-headline-md font-bold text-on-surface-variant">Kinema</div>
+      <div class="font-body-md text-body-md text-on-surface-variant/70">© 2024 Kinema. Made for movie lovers.</div>
+      <div class="flex gap-6 font-label-sm text-label-sm">
+        <a class="text-on-surface-variant/70 transition-all duration-300 hover:text-secondary" href="#">About</a>
+        <a class="text-on-surface-variant/70 transition-all duration-300 hover:text-secondary" href="#">Privacy</a>
+        <a class="text-on-surface-variant/70 transition-all duration-300 hover:text-secondary" href="#">Terms</a>
+        <a class="text-on-surface-variant/70 transition-all duration-300 hover:text-secondary" href="#">API</a>
+      </div>
+    </footer>
+
+    <script is:inline>
+      function simulateUpload() {
+        const uploadState = document.getElementById('upload-state');
+        const progressState = document.getElementById('progress-state');
+        const progressBar = document.querySelector('.progress-flat');
+        const progressText = document.querySelector('#progress-state p:last-of-type');
+
+        if (!uploadState || !progressState || !progressBar || !progressText) {
+          return;
+        }
+
+        uploadState.classList.add('hidden');
+        progressState.classList.remove('hidden');
+
+        setTimeout(() => {
+          progressBar.style.width = '100%';
+          progressText.textContent = '100% Completado';
+        }, 2000);
+      }
+    </script>
+  </body>
+</html>

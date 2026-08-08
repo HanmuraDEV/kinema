@@ -1,0 +1,153 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Button from '../../components/Button.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { username: 'cinelover99' } },
+    { params: { username: 'elenacine' } },
+  ];
+}
+
+const { username } = Astro.params;
+
+const review = {
+  author: '@cinelover99',
+  title: 'Una obra maestra visual',
+  movie: 'El Viaje de Chihiro (2001)',
+  rating: 4.5,
+  postedAgo: 'Publicado hace 2 días',
+  avatar:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuBo_puiE-L4l2IDnDqNy_FIozPDiSTa8HJVw5QyA5YuwxZFFGFwEHO-ZczCWB_ZSrzYrdjVRl009baXcar56C9LEawSIlphXyTB7h0WZYXP0_yQNanCetPWq9A8PSsdIBuHxuMFU6DXNPWTt70AD9HkvXgJVxOEd7tOTWLNRf99_EW5FD_ZAPXOY6qtX17cmUL_VGaa_N4Ik_sCIqeLvE2v-KWi5qzZQznPasrdRDBJV-dQ1sA8gUQeKhy4-02fBi0x38TO2RnvOKI',
+  poster:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuB-ig6PImUs5j3GqTiKtOj0a3GhmEQcwcbcYPDmQkJUElGvoOe3NlIG6_Rihg33_88SCYsp4F_At83xcrsUxgIJCSTFQGkivlyGuULhUhqU-i4Sy7nJLKhVrHM1f2qF9sjTDRI3e67ncMqMj3pnIbcIR6mPM0kpCADDUBsSS6r7_RFOSMVDYRAK4YezU9tzM46G25Ws0Ui3DRsMRNUsfAl6pkq42efNzSQ3QVmqfiITUcvCtmBm2G5N25lQ6NYKztkUotf_qIrSEtQ',
+  paragraphs: [
+    'Revisitar esta película después de tantos años es una experiencia casi mística. La animación de Studio Ghibli no ha envejecido ni un solo día; de hecho, en la era de la sobreabundancia de CGI, el trabajo artesanal se siente aún más valioso y táctil.',
+    'Lo que más me impactó en este visionado fue la sutileza del diseño de sonido. Cada paso en la casa de baños, el silbido del tren sobre el agua... todo contribuye a una atmósfera que es simultáneamente alienante y reconfortante.',
+    'El ritmo de la narrativa permite respirar, algo raro en el cine contemporáneo. Una joya absoluta que sigue siendo el estándar de oro de la animación tradicional.',
+  ],
+};
+
+const comments = [
+  {
+    username: 'MiyazakiFan',
+    time: 'hace 1 día',
+    content: 'Totalmente de acuerdo con lo del diseño de sonido. La escena del tren es mágica.',
+    likes: '2 Me gusta',
+    avatar:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuByNpLUCf7imCHYeMHe0Vk2mOyM5SZOwUC3D64QjKezv7faivEHjq7_zHEWJaWqTUMeAG0grgCjkK9iZC2Jh11yHRgnWWGZYuP1-h3uQ4lQyEURFaBfqsBq3JELZcAEE_ztFOuFc3lbJJlQlwUbUREfUKEEOa8ZfGH6lUD5FBoT9T4RuZt_T6dFt7rYW6bmHaG7lvIglFooTVyPNDqDh3M1pS5XOcSz6Z75X84vs0nQwZgLIRoC8K-8Jzu-CrEQgWtFigflhKwa0Js',
+  },
+  {
+    username: 'CinephileX',
+    time: 'hace 5 horas',
+    content: 'Es mi película favorita. Buena reseña, capturaste la esencia de la nostalgia.',
+    likes: 'Responder',
+    avatar:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuCc_XVjpdXcwbV5y5vKmSVXjxr_1Fa98GG_VsSyQQSv5I63SNpTjNNZN0Cx3ulZB4y-KwZf1woclkhcrlEETN00UdcCcSzfC3FXcLICblkJM_b5rBfS11JUijK-UN43rG-JQnHvxd2L62XLo76gfzNkFzu0C5TAZJN8592CFBeOB2xWOsFTmIk-snMA1sTLixwsvho2rzk5jD-s12RFF9e3ibEFS6qPt6Y7KeuwTPcNcE_KBYZCrg1DwNd3US388yR17HM0lMm6AQk',
+  },
+];
+---
+
+<Layout title={`Kinema - Reseña de ${username}`}>
+  <div class="fixed inset-0 z-[-1]">
+    <div
+      class="absolute inset-0 bg-cover bg-center opacity-30 blur-3xl scale-110"
+      style={`background-image: url('${review.poster}')`}
+    />
+    <div class="absolute inset-0 bg-white/60"></div>
+  </div>
+
+  <main class="mx-auto flex w-full max-w-[800px] flex-col gap-12 px-margin-mobile pb-32 pt-32 md:px-margin-desktop">
+    <article class="relative overflow-hidden">
+      <header class="mb-8 flex flex-col items-start gap-8 md:flex-row">
+        <img
+          alt={review.author}
+          class="h-16 w-16 shrink-0 rounded-full border-2 border-white object-cover shadow-sm"
+          src={review.avatar}
+        />
+
+        <div class="flex-1">
+          <div class="mb-2 flex flex-wrap items-baseline gap-2">
+            <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface md:font-headline-lg md:text-headline-lg">
+              {review.title}
+            </h1>
+            <span class="ml-auto rounded-md bg-secondary/10 px-3 py-1 font-label-md text-label-md text-secondary">
+              Reseña por {review.author}
+            </span>
+          </div>
+
+          <div class="mb-4 flex items-center gap-3 font-body-md text-body-md text-on-surface-variant">
+            <span>Para:</span>
+            <span class="font-bold text-on-surface">{review.movie}</span>
+          </div>
+
+          <div class="mb-2 flex items-center gap-1 text-tertiary">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <span
+                class="material-symbols-outlined text-[18px]"
+                style={`font-variation-settings: 'FILL' ${index < Math.floor(review.rating) ? 1 : 0};`}
+              >
+                {index === 4 && review.rating % 1 !== 0 ? 'star_half' : 'star'}
+              </span>
+            ))}
+            <span class="ml-2 font-label-md text-label-md text-on-surface-variant">{review.rating}/5</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="space-y-6 font-body-lg text-body-lg leading-relaxed text-on-surface">
+        {review.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+
+      <div class="mt-10 flex flex-wrap items-center gap-4 border-t border-outline-variant/30 pt-6">
+        <span class="mr-auto font-label-sm text-label-sm text-on-surface-variant">{review.postedAgo}</span>
+        <Button class="text-[14px]" icon="share" label="Twitter" variant="tertiary" />
+        <Button class="text-[14px]" icon="forum" label="WhatsApp" variant="tertiary" />
+      </div>
+    </article>
+
+    <section>
+      <h2 class="mb-6 flex items-center gap-2 font-headline-md text-headline-md font-bold text-on-surface">
+        <span class="material-symbols-outlined text-secondary">chat_bubble</span>
+        Comentarios ({comments.length})
+      </h2>
+
+      <div class="mb-8 flex items-start gap-4 border-b border-outline-variant/30 pb-8">
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-container font-bold text-on-primary-container">
+          T
+        </div>
+        <div class="flex-1">
+          <textarea class="w-full resize-none rounded-md border border-outline-variant/50 bg-surface-container-lowest p-3 font-body-md text-body-md text-on-surface outline-none transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/50" placeholder="Añade un comentario..." rows="2"></textarea>
+          <div class="mt-2 flex justify-end">
+            <Button class="text-[13px]" label="Publicar" variant="primary" />
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        {comments.map((comment) => (
+          <div class="flex gap-4 border-b border-outline-variant/20 py-4 last:border-0">
+            <img
+              alt={comment.username}
+              class="h-10 w-10 shrink-0 rounded-full object-cover"
+              src={comment.avatar}
+            />
+            <div>
+              <div class="mb-1 flex items-baseline gap-2">
+                <span class="font-label-md text-label-md font-bold text-on-surface">{comment.username}</span>
+                <span class="font-label-sm text-label-sm font-normal text-on-surface-variant">{comment.time}</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant">{comment.content}</p>
+              <div class="mt-2 flex cursor-pointer gap-4 text-outline transition-colors hover:text-secondary">
+                <span class="material-symbols-outlined text-[18px]">favorite_border</span>
+                <span class="font-label-sm text-label-sm">{comment.likes}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</Layout>

@@ -1,0 +1,95 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MoviePosterPanel from '../components/MoviePosterPanel.astro';
+import MovieCastList from '../components/MovieCastList.astro';
+import MovieRatingStats from '../components/MovieRatingStats.astro';
+import MovieTonePanel from '../components/MovieTonePanel.astro';
+
+const movie = {
+  title: 'El Resplandor del Mañana',
+  year: '2024',
+  director: 'Alejandro Jodorowsky',
+  runtime: '124 min',
+  genres: ['Ciencia Ficción', 'Drama'],
+  synopsis:
+    'En un futuro cercano donde las emociones humanas son cuantificables y comerciables, una archivista descubre una memoria analógica olvidada que desafía la base misma de su sociedad utópica y meticulosamente limpia. Su viaje para desentrañar el origen de la memoria la lleva a través de paisajes translúcidos y estructuras burocráticas laberínticas, forzándola a confrontar el verdadero costo de la perfección.',
+  poster:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuAMZuDmx-tq6JRBqEX89EdDesZ_Q5kqG7qEDQIZfGk4GpifXw-uSefwqaePgJoAt9Op4mVD6iFbf1HYofAG90zf0ni3QjPECSAHHh8dcBL9tmiDdUNJImCJpsrZCgo5_Tf6tj1AFTHnsKKAFdVqr1RzKcXrUMEVEEAK6SZU9ODlmMN4BqWD2lMR-Gqi16hfNi9vnz0abB8xFAFKP1P2awvFd89MemV8iHuDn41fwDBEWVoQC36zPJbJ0MNQhsPoFXgijwIim0w357w',
+  cast: [
+    {
+      name: 'Ana de Armas',
+      role: 'Elara',
+      image:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuATlJEy7dE8_GnuciUWsC-6Oq_4yoY1tDpy-y1xWwWhjvJJj3ncmxlfeka_FDOVwBc_sYAHfc641N4sU-b4jHVPeY1EhhfD9z5_11nmyhXDINJ6F-TQZ5f2ZGprhnkoIUwua7wo8wmDoi35jWzI0Z-35H2EVO0EuEwMNfvEYHOCGeXpTu72ppryAaiBFfMcGQcbfLyB3Il1kMbdo0rhq0iQ3nLX6evboTmcAtHf-hGfaVaV-1RVcywt-h0u5TMzdTOQGe1FTYUV82k',
+    },
+    {
+      name: 'Oscar Isaac',
+      role: 'Kael',
+      image:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCMlnCoqQFU8l3sWKaL_dQ2jN5Dje8l-RLRCpD2lD89kNmE8UXQmrQkuJcGdsaX7WFjt1jugVKNcZcet-feeTSQ8E0JjEhAkFs7foOQGAvKWc9rTF2jpoIFs4X67U1gnq38Xs9jOd7-XvJh6s2oTUmK5ZSX0LAMVnltx2yB5eHYFLhugDmxLov-larIM5cEfaUTW5CjMmb82pb7XKQdzh_79hAiX17E2e0LHjLOPM9T04DeBl7JSnB5r30E43dDpVGqjHgKkrqh_yo',
+    },
+    {
+      name: 'Gael García B.',
+      role: 'Silas',
+      image:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCqdtrAcvct3sKee9vxS5hXPn5rTo0GYbzXV2or3stmmgP_9oDA_keMKiHxBRmjvjgbkI56W8FCXhlIgvWUhwo26qBJ_UIp8nsq9UYSGcALOI0PGx8GNQ74izHv8k1CjumtuaraiOMyouP3xbC_7xbU0GUfj2zQHAUJ6xbsWBbJcro4Q0J8nv19pX0nAaqxaSrk1ESIzexsJ8Zlz8qyCHoU5QgVYLtkjZ0l5H5lGBUabGgEjAWq6Z2rzLQd9yjBilV3W-B5ljXgTqQ',
+    },
+  ],
+  ratingBars: [
+    { value: '5%', label: '0.5 stars' },
+    { value: '10%', label: '1.0 stars' },
+    { value: '8%', label: '1.5 stars' },
+    { value: '15%', label: '2.0 stars' },
+    { value: '25%', label: '2.5 stars' },
+    { value: '40%', label: '3.0 stars' },
+    { value: '60%', label: '3.5 stars' },
+    { value: '100%', label: '4.0 stars' },
+    { value: '85%', label: '4.5 stars' },
+    { value: '50%', label: '5.0 stars' },
+  ],
+};
+---
+
+<Layout title="Kinema - Perfil de Película">
+  <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 pb-32">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+      <MoviePosterPanel poster={movie.poster} title={movie.title} />
+
+      <div class="md:col-span-8 flex flex-col gap-8">
+        <div class="flex flex-col gap-2">
+          <h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background">
+            {movie.title}
+          </h1>
+
+          <div class="flex items-center gap-4 text-on-surface-variant font-label-sm text-label-sm">
+            <span>{movie.year}</span>
+            <span>•</span>
+            <span>Dir. {movie.director}</span>
+            <span>•</span>
+            <span>{movie.runtime}</span>
+          </div>
+
+          <div class="flex gap-2 mt-2 flex-wrap">
+            {movie.genres.map((genre) => (
+              <span class="px-3 py-1 rounded-sm border border-secondary text-secondary font-label-sm text-label-sm">
+                {genre}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div class="pt-6 border-t border-outline-variant/30">
+          <h3 class="font-headline-md text-headline-md mb-4 text-secondary">Sinopsis</h3>
+          <p class="font-body-md text-body-md text-on-surface-variant">{movie.synopsis}</p>
+        </div>
+
+        <MovieCastList cast={movie.cast} />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter pt-6 border-t border-outline-variant/30">
+          <MovieRatingStats ratingBars={movie.ratingBars.map((bar) => ({ label: bar.label, height: bar.value }))} />
+          <MovieTonePanel />
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>

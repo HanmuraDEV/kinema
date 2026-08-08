@@ -1,0 +1,71 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+---
+
+<Layout title="Kinema - 404 No Encontrado">
+  <main class="flex-grow flex flex-col items-center justify-center px-margin-mobile md:px-margin-desktop py-24 relative w-full max-w-container-max mx-auto">
+    <div class="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] bg-tertiary-container/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-pulse" style="animation-duration: 8s;"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[50vw] h-[50vw] bg-secondary-container/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-60 animate-pulse" style="animation-duration: 12s; animation-delay: -4s;"></div>
+
+    <div class="relative z-10 flex flex-col items-center text-center max-w-2xl w-full">
+      <div class="glitch-wrapper w-full max-w-md aspect-[2/3] rounded-lg shadow-lg ambient-glow mb-12 overflow-hidden bg-surface-container relative">
+        <img
+          class="w-full h-full object-cover"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjPMGNNwQ1ROsintuxSV_ePXlpKSyGDZX1Cw6h4ooSCbC-3QUzkJlT2SCAS8J1EYFa7R844nrnNXczGhWqnaKs2Ue4YXDKIlJO9FZ8JrHRUqy_ckCFv2op_gsHeGvMkW4_lYZfyv-jQqr8nEF2GKbc1bHUAQh7itg53sSTsU-QPSb50kcrhgajhv_PPQkxdifhiZ6OVdbtp6AdZW8IJpkTR2B8bJ6lCW64z_w53AJ2byOr7nB-j_Nk0Rm8XVaxqSDQenbVmaccHMw"
+          alt="Poster abstracto estilo cinematic error 404"
+        />
+        <div class="glitch-overlay"></div>
+        <div class="absolute inset-0 border border-white/30 rounded-lg pointer-events-none"></div>
+        <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/10 backdrop-blur-[2px]">
+          <span class="font-headline-xl text-[120px] font-bold text-white/90 drop-shadow-md tracking-tighter" style="line-height: 1;">404</span>
+        </div>
+      </div>
+
+      <h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-4">
+        “Houston, tenemos un problema.”
+      </h1>
+
+      <p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-lg mx-auto">
+        Parece que te has perdido en una escena eliminada. La página que buscas no existe en este guion.
+      </p>
+
+      <Button href="/" icon="home" iconFilled={true} label="Volver a Casa" variant="tertiary" class="px-8 py-4" />
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .ambient-glow {
+    box-shadow: 0 15px 30px -5px rgba(57, 105, 64, 0.15);
+  }
+
+  .glitch-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glitch-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.1) 2px,
+      rgba(255, 255, 255, 0.1) 4px
+    );
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    animation: scanline 8s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(100%);
+    }
+  }
+</style>

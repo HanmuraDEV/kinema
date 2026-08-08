@@ -1,0 +1,216 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+import Button from '../components/Button.astro';
+
+const profile = {
+  name: 'Elena Rivera',
+  handle: '@elenacine',
+  bio: 'Cinéfila obsesionada con thrillers de alta tensión, ciencia ficción cerebral y joyas de autor. Documenta cada película que ve, arma listas de seguimiento y comparte reseñas con una mirada de comunidad.',
+  image:
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuCCepcYRxJqAHy7ZA-CXV5fJLAgNmKOyZlg-x-mmrVyleOmsQhMNeHp4egysd8xotc45bolyMsG-pbvV1-C-accAbaFBUJuIpVMfbnpeo8ueYRM1yrgEQUsccJSAdR_5QtEPIcfCKQFXNceKC1H5YNxtJjS6yJnK50oYRk-wIxoHP_FNZ462kOAJkeBElRaWeBFk-eetFPoNaY8I9Wy59d59EkO9GimCWY4bxPGfke1Bxc1QMn3O-rBUW6_ANM4NByWj7eW_xT0Mpw',
+  stats: [
+    { label: 'Películas', value: '1,248' },
+    { label: 'Este Año', value: '87' },
+    { label: 'Seguidores', value: '342' },
+  ],
+};
+
+const activityDays = [
+  '#f5f9f4',
+  '#dcefd9',
+  '#bfe0bf',
+  '#9dd19c',
+  '#74bd77',
+  '#4fa856',
+  '#347d3d',
+];
+
+const favorites = [
+  {
+    title: 'The Matrix',
+    year: '1999',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuAbqAcAlxM7jfhXTfQbZ77G_hQhXXJY7qposEH0gsTFZQYe8Ai4aYTIPyBCnjcy9Cecj5jbN4TcbDjk2keb8tvmzDqRcdUnLb5MClk6I2cZy49zHkjxdY9bJcLJ8SfJm1RAxyGu5nshwRkQJsR3pg8GNWMH8n3K8OElqmJpjs2AAo6lKxY1mce0geRFxtCVsjlh0LfpciVZeg61SLJP7g16u_8MWERmDjAplm2jT769u1f8XRs4483aUVCtnkKE-uLh635QfuKtZPU',
+  },
+  {
+    title: 'Donnie Darko',
+    year: '2001',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuAp2jEipEsCLtJut0sFKIwjYWD4_ExyfT3d8cVcFVJjuh8oMefiJjbJLSDtkEGywMj6oL7iw4asSRXBNH-8OhSpW6wqJm3h9iWa4mdXP7QxdmyGL204BNvhx08MrKqwsYRP6YfjkzlZ_mrmqL4vNLYPf8Yi21tlJzMHG65obl8Z-USaWEjGx54ffvAgBIlEWyrVgfUNFCj8y3HJR3kSk_hzi3HhxnkOaKbNKaAG6B8uiDmmV5UftkXZ59z_O1drRCvrCGqTVydxvPQ',
+  },
+  {
+    title: 'Lost in Translation',
+    year: '2003',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuDMMSJsfYPDxUZmAPHqGogtIwt8Txjqs0dLxa-pugtyGzKYuY-p4TFfoBLaW-kNgKgY8Uo_lPbDt213GOzDwQ_PDiM7P1lE7_0Sy7LNh8aUv8Gf1xmsfdqVSAKWTj2IX8DpW9I5q6NM8v07lZLXpC0e-gYrU5oshmXhZraY-4JSo0Vn-v5c1SToIXeav4osLIFf-OJA8PDtNSlkYPaPDsjnBOAZK2wH_zeZ9N2d09OhiKgucJJ-mHvvM8OKVGRyq4JMs9QD5ci6px4',
+  },
+  {
+    title: 'Gattaca',
+    year: '1997',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuDdHoBhTYkL2ePIijCiYjrBU283ZHlMHo2uBGxlNn5xB8KICTyRn-NNGqT18dtfYijqjWcyE20zvVtAIE4j83_ONBdLT5VwUNhGDmLuL8iyb0SSYD9_t0ixr8ukBdmftKni3CPVq-8twPUkbo4obFiaQ6V0H6g0ZFhH6OC_dNcLhvANgMWp4y0RJQM5NC9zqq9HUx_lVt3LBfiVBlx0vEZD7zUpzO7fT3p7VrGm7fensptXa51OorevalllYWmerOQwzmoLl5GNnds',
+  },
+];
+
+const diaryEntries = [
+  {
+    title: 'Blade Runner 2049',
+    meta: '3h 12m • Análisis visual',
+    excerpt: 'Una experiencia elegante, con una cinematografía impecable y un final que se queda en la memoria.',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuDzkpQzN5KArN28USY31k3_2gQeQAZjkHDtYMbmq89PkjWn-b9HshnKYb6oHUNg1_ybk43z-5PTlko8cQYfztvCGPHa3JyE8Wu9p_QAaA1STI1cQ7d1pFm1TAH4p_MTU229U9So5YDDSKveSMH14WATN2ryKw0_kI9faomycTd3h1l6ibOPoLXXjJO61FbToWssO3GSfZCIC2BlVs8HfPZ63ppVH6wl4dhQy2avihyiinkEDpniOYEZ1cASMCKrE02VFdoRDO6Dyz8',
+  },
+  {
+    title: 'The Grand Budapest Hotel',
+    meta: '2h 08m • Reseña rápida',
+    excerpt: 'Todo está diseñado como una caja de juguetes, con detalles muy finos, ritmo brillante y humor muy preciso.',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuAdu4mWszMRBGfXtHGRr0tTuAKtt0JT0SwvCBAwM-UmA0I5cKc8Y5XjIR1P7w1XjOO5m5fY8P2a0yNGI9X1Hbb7u7tNq6eC04v3eS1l2w4y7yqRZBC9sJ7g8lZbhQ0y2b2sJgP56LkI5cA',
+  },
+];
+---
+
+<Layout title="Kinema - Perfil de Usuario">
+  <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12 flex flex-col gap-8 md:gap-12 pb-32 md:pb-12">
+    <section class="relative overflow-hidden rounded-[28px] border border-outline-variant/20 bg-surface/70 px-6 py-8 md:px-10 md:py-10 shadow-sm">
+      <div class="absolute top-[-50%] right-[-10%] h-96 w-96 rounded-full bg-secondary-container/20 blur-3xl"></div>
+      <div class="relative flex flex-col items-center gap-8 md:flex-row md:items-start">
+        <div class="relative">
+          <img
+            alt={profile.name}
+            class="h-32 w-32 rounded-full object-cover border border-outline-variant/30 md:h-48 md:w-48"
+            src={profile.image}
+          />
+          <button class="absolute bottom-0 right-0 rounded-md border border-outline-variant/30 bg-surface p-2 text-on-surface transition-colors hover:bg-surface-variant">
+            <span class="material-symbols-outlined" style="font-size: 20px;">edit</span>
+          </button>
+        </div>
+
+        <div class="flex flex-1 flex-col items-center text-center md:items-start md:text-left">
+          <div class="mb-2 flex flex-col items-center gap-2 md:flex-row md:items-baseline">
+            <h1 class="font-headline-xl text-headline-lg-mobile md:text-headline-xl text-on-surface tracking-tight">{profile.name}</h1>
+            <span class="font-label-md text-label-md text-outline">{profile.handle}</span>
+          </div>
+          <p class="mb-6 max-w-2xl font-body-lg text-body-lg text-on-surface-variant">{profile.bio}</p>
+          <div class="flex flex-wrap justify-center gap-8 md:justify-start">
+            {profile.stats.map((stat) => (
+              <div class="flex flex-col items-center md:items-start">
+                <span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">{stat.label}</span>
+                <span class="font-headline-md text-headline-md text-primary">{stat.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="flex gap-2 md:justify-end">
+          <Button class="min-w-[144px]" icon="edit" label="Editar perfil" variant="secondary" />
+          <button class="rounded-md border border-outline-variant/30 bg-transparent p-2 text-on-surface-variant transition-colors hover:text-on-surface">
+            <span class="material-symbols-outlined">share</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 gap-6 border-b border-outline-variant/20 pb-12 lg:grid-cols-3">
+      <div class="flex flex-col rounded-[24px] border border-outline-variant/20 bg-surface/60 p-6 lg:col-span-2">
+        <div class="mb-6 flex items-center justify-between">
+          <h2 class="font-headline-md text-headline-md text-on-surface">Actividad Cinéfila</h2>
+          <select class="cursor-pointer border-none bg-transparent text-outline focus:ring-0">
+            <option>2024</option>
+            <option>2023</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col justify-center overflow-x-auto pb-2">
+          <div class="flex min-w-[640px] gap-1">
+            {activityDays.map((day, index) => (
+              <div
+                class="h-8 w-8 rounded-[6px]"
+                style={`background:${day}; opacity:${0.48 + ((index % 4) * 0.1)}`}
+              />
+            ))}
+          </div>
+          <div class="mt-3 flex justify-between text-label-sm text-outline">
+            <span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative flex min-h-[300px] flex-col items-center justify-center rounded-[24px] border border-outline-variant/20 bg-surface/60 p-6">
+        <h2 class="absolute left-6 top-6 w-full text-left font-headline-md text-headline-md text-on-surface">Radar de Gustos</h2>
+        <div class="relative mt-8 h-48 w-48">
+          <div class="absolute inset-0 rounded-full border border-outline-variant/30"></div>
+          <div class="absolute inset-4 rounded-full border border-outline-variant/30"></div>
+          <div class="absolute inset-8 rounded-full border border-outline-variant/30"></div>
+          <div class="absolute inset-12 rounded-full border border-outline-variant/30"></div>
+          <div class="absolute inset-0 flex h-full w-full items-center justify-center">
+            <div class="absolute h-px w-full bg-outline-variant/30"></div>
+            <div class="absolute h-px w-full rotate-45 bg-outline-variant/30"></div>
+            <div class="absolute h-px w-full rotate-90 bg-outline-variant/30"></div>
+            <div class="absolute h-px w-full -rotate-45 bg-outline-variant/30"></div>
+          </div>
+          <svg class="absolute inset-0 z-10 h-full w-full drop-shadow-md" viewBox="0 0 100 100">
+            <polygon fill="rgba(172, 225, 175, 0.5)" points="50,15 80,40 70,85 30,70 15,35" stroke="#396940" stroke-linejoin="round" stroke-width="2"></polygon>
+            <circle cx="50" cy="15" r="3" fill="#396940"></circle>
+            <circle cx="80" cy="40" r="3" fill="#396940"></circle>
+            <circle cx="70" cy="85" r="3" fill="#396940"></circle>
+            <circle cx="30" cy="70" r="3" fill="#396940"></circle>
+            <circle cx="15" cy="35" r="3" fill="#396940"></circle>
+          </svg>
+          <span class="absolute -top-6 left-1/2 -translate-x-1/2 font-label-sm text-label-sm text-outline">Sci-Fi</span>
+          <span class="absolute top-1/2 -right-12 -translate-y-1/2 font-label-sm text-label-sm text-outline">Drama</span>
+          <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 font-label-sm text-label-sm text-outline">Horror</span>
+          <span class="absolute top-1/2 -left-16 -translate-y-1/2 font-label-sm text-label-sm text-outline">Comedia</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">
+          <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">star</span>
+          Top 4 Favoritas
+        </h2>
+        <a class="font-label-md text-label-md text-secondary hover:underline" href="#">Explorar</a>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+        {favorites.map((movie) => (
+          <article class="group relative aspect-[2/3] overflow-hidden rounded-xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <img alt={movie.title} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src={movie.image} />
+            <div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span class="font-headline-md text-headline-md text-white">{movie.title}</span>
+              <span class="font-label-sm text-label-sm text-primary-fixed">{movie.year}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="font-headline-md text-headline-md text-on-surface">Diario Reciente</h2>
+        <a class="font-label-md text-label-md text-secondary hover:underline" href="#">Ver todo</a>
+      </div>
+
+      <div class="flex flex-col">
+        {diaryEntries.map((entry) => (
+          <div class="group flex cursor-pointer items-center gap-4 border-b border-outline-variant/20 py-6 transition-colors hover:bg-surface-container-low/50">
+            <img alt={entry.title} class="h-24 w-16 rounded-md object-cover shadow-sm" src={entry.image} />
+            <div class="flex-grow">
+              <div class="mb-1 flex items-start justify-between gap-4">
+                <div>
+                  <h3 class="font-label-md text-label-md text-on-background">{entry.title}</h3>
+                  <p class="font-label-sm text-label-sm text-outline">{entry.meta}</p>
+                </div>
+                <span class="font-label-sm text-label-sm text-secondary">Hace 2 días</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant">{entry.excerpt}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</Layout>

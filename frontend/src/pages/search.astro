@@ -1,0 +1,55 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import SearchSidebar from '../components/SearchSidebar.astro';
+import SearchResults from '../components/SearchResults.astro';
+
+const vibeTags = [
+  'Tensión constante',
+  'Estética Neón',
+  'Melancolía de domingo',
+  'Viaje en el tiempo',
+];
+
+const results = [
+  {
+    title: 'Drive',
+    year: '2011',
+    rating: '4.5',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuBak7TPxqIE2_7-hSwZDCL79AVNanUM6xstmu_fASNS3UKP4TWzgF4cAu_VFmOeISqZrv2ywSsiplOPbR3-mkc6-7QiOt-TPhsSUOu3_F-8gkgQlX9YIQsPrsXLd7UCU90WJQWVU51MwSjUNqJ_zphBjogCaUtI6G75TxbDeBdcAv7FzeIfJ-qZzLj9GtFXJgCJkCm24nsjgBQ0KYOzxZyd7VcIcuRj5cxJjnJTxtG3VJyl9rgMnSv9wdUaCeUCkr7qNYb-9i6br-A',
+  },
+  {
+    title: 'Tron Legacy',
+    year: '2010',
+    rating: '4.2',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuByioP1Vij2nWludobAV7wz4qV_abm57g0klP-lRfphKTc24dgkjA6KJYiEXICF7Lr5uNfaPTSuYiDX0sp0MR_R9Bqu8NKs-Oc53np9cAQAMc-EznFtwGkB8GZQGRNMSVxXOo-RfFaV9Vql1LxIh5UGv6Cbi-rgLZE6B8G08f2fMsQMOW6Fjdaxa5J9v15KnI2Yy4ipYg05DlJ5CdnGsJ48ER0ve2NMFS0EnM1vENNhqZ6veQd5M9UE2rBkK1KMTUV-wZVvyZDbj_P8E',
+  },
+  {
+    title: 'Lost in Translation',
+    year: '2003',
+    rating: '4.8',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuDbmKWi1gKXWPKn8KvobScnF-yJdCUIdzefMukb6wTnGTDdSy1luDxj1SbwEm9nocw21iwq3-bsZNMgAn8cvD1lF58PSGhyp6P-VT-csOvQdCmuq2XAxahVWdUrJTwn2zUrY1pmjLWGpFgsLNi5R-oYHfwIdHtBO76b7RN7XwOCnomY1bg8izybqx7LGkM8Jtmc4PCTTxVDbohG8shRb52L6U0VaMSaxI3PQgFm_hIZUdF1VHogdrDazoqknsh2nbP43Vl5XUXm7Do',
+  },
+  {
+    title: 'The Matrix',
+    year: '1999',
+    rating: '5.0',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuDxQx2nCcfDuE9dfMfiJvc4Nv8WoyMoXSw1NjC1h1zqo6iMpzNMpZnsKaxym9Imu2mMcin3I0HiWpciPrKLtV5vv4IjC-xHtV5FTj6AZ_jd7TaBMPuaSsDFD_E8qskHPQ7x-eUn4Zkjf-p7jeFZPCblhp5pwb8dAE1-kcMHrL_WZ_y6mJ8WMPtgLPIh-Vw1bzlBerGIs4ZfU9BKH-bFFEpp9ul6TBf8n55OYYO5IRozHStnhVPPj2o4V6UKarikQyqogiw_HXxl3N8',
+  },
+];
+---
+
+<Layout title="Kinema - Buscar y Descubrir">
+  <main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-gutter pb-32 md:pb-12">
+
+
+    <div class="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-8 lg:items-start">
+      <SearchSidebar vibeTags={vibeTags} />
+      <SearchResults results={results} />
+    </div>
+  </main>
+</Layout>
