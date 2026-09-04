@@ -28,4 +28,9 @@ class Movie extends Model
     protected $casts = [
         'embedding' => Vector::class,
     ];
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }
