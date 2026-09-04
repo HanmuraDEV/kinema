@@ -26,7 +26,7 @@ return new class extends Migration
             // Motor de Machine Learning
             $table->float('x_coordinate')->nullable();
             $table->float('y_coordinate')->nullable();
-            $table->vector('embedding', 768)->nullable();
+            $table->vector('embedding', 3072)->nullable();
 
             $table->timestamps();
 });
