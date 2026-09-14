@@ -1,9 +1,10 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import MoviePosterPanel from '../components/MoviePosterPanel.astro';
-import MovieCastList from '../components/MovieCastList.astro';
-import MovieRatingStats from '../components/MovieRatingStats.astro';
-import MovieTonePanel from '../components/MovieTonePanel.astro';
+import Layout from '../layouts/Layout.vue';
+import MoviePosterPanel from '../components/MoviePosterPanel.vue';
+import MovieCastList from '../components/MovieCastList.vue';
+import MovieRatingStats from '../components/MovieRatingStats.vue';
+import MovieTonePanel from '../components/MovieTonePanel.vue';
+import Card from '../components/Card.vue';
 
 const movie = {
   title: 'El Resplandor del Mañana',
@@ -48,6 +49,23 @@ const movie = {
     { value: '50%', label: '5.0 stars' },
   ],
 };
+
+const reviews = [
+  {
+    author: 'LunaCine',
+    rating: '4.5',
+    time: 'Hace 3 días',
+    text: 'Una película ambiciosa y delicada. La idea de la memoria como resistencia se queda contigo mucho después de los créditos.',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBo_puiE-L4l2IDnDqNy_FIozPDiSTa8HJVw5QyA5YuwxZFFGFwEHO-ZczCWB_ZSrzYrdjVRl009baXcar56C9LEawSIlphXyTB7h0WZYXP0_yQNanCetPWq9A8PSsdIBuHxuMFU6DXNPWTt70AD9HkvXgJVxOEd7tOTWLNRf99_EW5FD_ZAPXOY6qtX17cmUL_VGaa_N4Ik_sCIqeLvE2v-KWi5qzZQznPasrdRDBJV-dQ1sA8gUQeKhy4-02fBi0x38TO2RnvOKI',
+  },
+  {
+    author: 'FrameByFrame',
+    rating: '4.0',
+    time: 'Hace 1 semana',
+    text: 'Visualmente impecable, con un ritmo contemplativo que recompensa la paciencia. El diseño de producción es extraordinario.',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuByNpLUCf7imCHYeMHe0Vk2mOyM5SZOwUC3D64QjKezv7faivEHjq7_zHEWJaWqTUMeAG0grgCjkK9iZC2Jh11yHRgnWWGZYuP1-h3uQ4lQyEURFaBfqsBq3JELZcAEE_ztFOuFc3lbJJlQlwUbUREfUKEEOa8ZfGH6lUD5FBoT9T4RuZt_T6dFt7rYW6bmHaG7lvIglFooTVyPNDqDh3M1pS5XOcSz6Z75X84vs0nQwZgLIRoC8K-8Jzu-CrEQgWtFigflhKwa0Js',
+  },
+];
 ---
 
 <Layout title="Kinema - Perfil de Película">
@@ -91,5 +109,38 @@ const movie = {
         </div>
       </div>
     </div>
+
+    <section class="mt-12 border-t border-outline-variant/30 pt-8">
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <div>
+          <h2 class="font-headline-md text-headline-md text-secondary">Reseñas de usuarios</h2>
+          <p class="font-body-md text-body-md text-on-surface-variant">Lo que la comunidad piensa de esta película.</p>
+        </div>
+        <span class="font-label-md text-label-md text-primary">{reviews.length} reseñas</span>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {reviews.map((review) => (
+          <Card class="border border-outline-variant/20" variant="feature" bodyClass="p-5">
+            <div class="flex items-start gap-4">
+              <img alt={review.author} class="h-10 w-10 shrink-0 rounded-full object-cover" src={review.avatar} />
+              <div class="min-w-0 flex-1">
+                <div class="mb-2 flex items-center justify-between gap-3">
+                  <div>
+                    <h3 class="font-label-md text-label-md font-bold text-on-surface">{review.author}</h3>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">{review.time}</span>
+                  </div>
+                  <span class="flex shrink-0 items-center gap-1 font-label-md text-label-md text-tertiary">
+                    <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                    {review.rating}
+                  </span>
+                </div>
+                <p class="font-body-md text-body-md text-on-surface-variant">{review.text}</p>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </section>
   </main>
 </Layout>

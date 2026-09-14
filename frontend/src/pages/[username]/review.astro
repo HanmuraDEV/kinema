@@ -1,6 +1,6 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import Button from '../../components/Button.astro';
+import '../../styles/global.css';
+import Button from '../../components/Button.vue';
 
 export function getStaticPaths() {
   return [
@@ -48,8 +48,18 @@ const comments = [
 ];
 ---
 
-<Layout title={`Kinema - Reseña de ${username}`}>
-  <div class="fixed inset-0 z-[-1]">
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <title>Kinema - Reseña de {username}</title>
+  </head>
+  <body class="min-h-screen bg-background text-on-background antialiased">
+    <div class="fixed inset-0 z-[-1]">
     <div
       class="absolute inset-0 bg-cover bg-center opacity-30 blur-3xl scale-110"
       style={`background-image: url('${review.poster}')`}
@@ -57,7 +67,11 @@ const comments = [
     <div class="absolute inset-0 bg-white/60"></div>
   </div>
 
-  <main class="mx-auto flex w-full max-w-[800px] flex-col gap-12 px-margin-mobile pb-32 pt-32 md:px-margin-desktop">
+    <nav class="mx-auto w-full max-w-[1000px] px-margin-mobile pt-6 md:px-margin-desktop">
+      <Button href="/" icon="arrow_back" label="Volver" variant="ghost" class="text-secondary" />
+    </nav>
+
+  <main class="mx-auto flex w-full max-w-[1000px] flex-col gap-10 px-margin-mobile pb-20 pt-8 md:px-margin-desktop">
     <article class="relative overflow-hidden">
       <header class="mb-8 flex flex-col items-start gap-8 md:flex-row">
         <img
@@ -150,4 +164,5 @@ const comments = [
       </div>
     </section>
   </main>
-</Layout>
+  </body>
+</html>

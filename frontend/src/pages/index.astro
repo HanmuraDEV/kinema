@@ -1,6 +1,7 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
+import Layout from '../layouts/Layout.vue';
+import Card from '../components/Card.vue';
+import Button from '../components/Button.vue';
 
 const discoveryMovies = [
   {
@@ -72,9 +73,9 @@ const activityItems = [
         </div>
       </div>
 
-      <div class="flex overflow-x-auto gap-6 pb-8 pt-4 no-scrollbar -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 snap-x">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pb-8 pt-4">
         {discoveryMovies.map((movie) => (
-          <article class="min-w-[280px] md:min-w-[400px] h-[400px] md:h-[500px] rounded-xl relative overflow-hidden snap-center group flex-shrink-0 cursor-pointer transition-transform duration-300 hover:-translate-y-2 border border-outline-variant/20">
+          <article class="min-w-0 h-[400px] md:h-[500px] rounded-xl relative overflow-hidden group cursor-pointer transition-transform duration-300 hover:-translate-y-2 border border-outline-variant/20">
             <img
               alt="Movie Poster"
               class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -101,7 +102,7 @@ const activityItems = [
       <section class="md:col-span-5 flex flex-col gap-6">
         <div class="flex items-center justify-between">
           <h3 class="font-headline-md text-headline-md text-primary">Actividad de Amigos</h3>
-          <button class="text-secondary hover:text-primary transition-colors text-label-sm font-label-sm">Ver todo</button>
+          <Button class="p-0 text-secondary hover:text-primary" label="Ver todo" variant="ghost" />
         </div>
 
         <div class="flex flex-col">
@@ -165,9 +166,11 @@ const activityItems = [
             <p class="font-label-sm text-label-sm text-outline mb-2">Comedia Indie • 2022</p>
             <div class="flex items-center justify-between">
               <span class="text-primary font-bold text-label-md">98% Match</span>
-              <button class="w-8 h-8 rounded-md bg-secondary-container text-on-secondary-container flex items-center justify-center hover:bg-secondary-container/80 transition-colors">
-                <span class="material-symbols-outlined text-[18px]">add</span>
-              </button>
+              <Button
+                class="w-8 h-8 p-0 rounded-md bg-secondary-container text-on-secondary-container flex items-center justify-center hover:bg-secondary-container/80 transition-colors"
+                icon="add"
+                variant="secondary"
+              />
             </div>
           </Card>
 
@@ -180,9 +183,11 @@ const activityItems = [
             <p class="font-label-sm text-label-sm text-outline mb-2">Documental Musical • 2021</p>
             <div class="flex items-center justify-between">
               <span class="text-primary font-bold text-label-md">95% Match</span>
-              <button class="w-8 h-8 rounded-md bg-secondary-container text-on-secondary-container flex items-center justify-center hover:bg-secondary-container/80 transition-colors">
-                <span class="material-symbols-outlined text-[18px]">add</span>
-              </button>
+              <Button
+                class="w-8 h-8 p-0 rounded-md bg-secondary-container text-on-secondary-container flex items-center justify-center hover:bg-secondary-container/80 transition-colors"
+                icon="add"
+                variant="secondary"
+              />
             </div>
           </Card>
 

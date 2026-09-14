@@ -1,0 +1,56 @@
+<template>
+  <!doctype html>
+  <html lang="es">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <link rel="icon" href="/favicon.ico" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+      <meta name="generator" content="Astro" />
+      <title>{{ title }}</title>
+    </head>
+    <body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+      <Navbar />
+      <slot />
+
+      <nav class="md:hidden bg-surface fixed bottom-0 left-0 w-full border-t border-outline-variant/30 z-50 flex justify-around items-center px-4 py-2 pb-safe">
+        <a class="flex flex-col items-center justify-center text-primary p-3" href="#">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">search</span>
+          <span class="font-label-sm text-label-sm mt-1">Search</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="#">
+          <span class="material-symbols-outlined">calendar_today</span>
+          <span class="font-label-sm text-label-sm mt-1">Diary</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="#">
+          <span class="material-symbols-outlined">format_list_bulleted</span>
+          <span class="font-label-sm text-label-sm mt-1">Lists</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="#">
+          <span class="material-symbols-outlined">add_circle</span>
+          <span class="font-label-sm text-label-sm mt-1">Log</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="#">
+          <span class="material-symbols-outlined">person</span>
+          <span class="font-label-sm text-label-sm mt-1">Profile</span>
+        </a>
+      </nav>
+
+      <Footer />
+    </body>
+  </html>
+</template>
+
+<script setup>
+import '../styles/global.css';
+import Footer from '../components/Footer.vue';
+import Navbar from '../components/Navbar.vue';
+
+defineProps({
+  title: { type: String, default: 'Kinema' },
+});
+</script>

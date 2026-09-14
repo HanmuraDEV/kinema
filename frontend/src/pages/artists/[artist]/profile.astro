@@ -1,5 +1,13 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../../../layouts/Layout.vue';
+import Button from '../../../components/Button.vue';
+import Card from '../../../components/Card.vue';
+
+export function getStaticPaths() {
+  return [{ params: { artist: 'denis-villeneuve' } }];
+}
+
+const { artist } = Astro.params;
 
 const profile = {
   name: 'Denis Villeneuve',
@@ -50,7 +58,7 @@ const profile = {
 };
 ---
 
-<Layout title="Kinema - Perfil del Reparto y Equipo">
+<Layout title={`Kinema - Perfil de ${artist}`}>
   <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-gutter">
     <header class="flex flex-col md:flex-row items-center md:items-start gap-gutter mb-12">
       <div class="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden">
@@ -114,25 +122,31 @@ const profile = {
 
         <div class="space-y-4">
           {profile.filmography.map((movie) => (
-            <div class="group flex items-center gap-4 p-4 rounded hover:bg-white/80 transition-all duration-300 border border-transparent hover:border-white/50 cursor-pointer">
-              <div class="w-16 h-24 bg-surface-container-highest rounded overflow-hidden relative">
-                <img alt={movie.title} class="w-full h-full object-cover" src={movie.image} />
-                <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors"></div>
+            <Card
+              class="group flex items-center gap-4 rounded border border-transparent p-4 transition-all duration-300 hover:border-white/50 hover:bg-white/80"
+              bodyClass="flex-1 flex items-center gap-4"
+              variant="feature"
+            >
+              <div slot="media" class="relative h-24 w-16 flex-none overflow-hidden rounded bg-surface-container-highest">
+                <img alt={movie.title} class="h-full w-full object-cover" src={movie.image} />
+                <div class="absolute inset-0 bg-primary/0 transition-colors group-hover:bg-primary/10"></div>
               </div>
               <div class="flex-1">
-                <h3 class="font-label-md text-label-md text-on-background text-lg mb-1 group-hover:text-primary transition-colors">{movie.title}</h3>
+                <h3 class="font-label-md text-label-md text-on-background text-lg mb-1 transition-colors group-hover:text-primary">{movie.title}</h3>
                 <p class="font-body-md text-body-md text-on-surface-variant text-sm">{movie.year} • {movie.credit}</p>
               </div>
               <div class="flex flex-col items-end gap-1">
                 <span class="font-label-md text-label-md text-tertiary">★ {movie.rating}</span>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
 
-        <button class="w-full mt-6 py-3 rounded bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md transition-colors">
-          Ver Filmografía Completa
-        </button>
+        <Button
+          class="mt-6 w-full rounded bg-surface-container py-3 text-primary hover:bg-surface-container-high"
+          label="Ver Filmografía Completa"
+          variant="ghost"
+        />
       </section>
     </div>
   </main>

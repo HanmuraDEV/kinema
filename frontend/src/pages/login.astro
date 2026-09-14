@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import Button from '../components/Button.astro';
+import Button from '../components/Button.vue';
 ---
 
 <html lang="es">
@@ -48,12 +48,8 @@ import Button from '../components/Button.astro';
           </div>
 
           <div class="mb-8 flex gap-4 border-b border-outline-variant/30 pb-2">
-            <button class="border-b-2 border-secondary px-2 pb-2 font-label-md text-label-md text-secondary transition-colors">
-              Iniciar Sesión
-            </button>
-            <button class="px-2 pb-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:text-secondary">
-              Registrarse
-            </button>
+            <Button class="rounded-none border-b-2 border-secondary px-2 pb-2 text-secondary" label="Iniciar Sesión" variant="ghost" />
+            <Button class="rounded-none px-2 pb-2 text-on-surface-variant hover:text-secondary" label="Registrarse" variant="ghost" />
           </div>
 
           <form class="space-y-6">
