@@ -1,7 +1,16 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
-import Button from '../components/Button.astro';
+import Layout from '../../layouts/Layout.vue';
+import Card from '../../components/Card.vue';
+import Button from '../../components/Button.vue';
+
+export function getStaticPaths() {
+  return [
+    { params: { username: 'cinelover99' } },
+    { params: { username: 'elenacine' } },
+  ];
+}
+
+const { username } = Astro.params;
 
 const profile = {
   name: 'Elena Rivera',
@@ -69,9 +78,30 @@ const diaryEntries = [
       'https://lh3.googleusercontent.com/aida-public/AB6AXuAdu4mWszMRBGfXtHGRr0tTuAKtt0JT0SwvCBAwM-UmA0I5cKc8Y5XjIR1P7w1XjOO5m5fY8P2a0yNGI9X1Hbb7u7tNq6eC04v3eS1l2w4y7yqRZBC9sJ7g8lZbhQ0y2b2sJgP56LkI5cA',
   },
 ];
+
+const userLists = [
+  {
+    title: 'Ciencia ficción para perderse',
+    description: 'Mundos extraños, futuros posibles y preguntas difíciles.',
+    count: '24 películas',
+    covers: [favorites[0].image, favorites[3].image],
+  },
+  {
+    title: 'Domingos de autor',
+    description: 'Películas pausadas para mirar con una taza de café.',
+    count: '18 películas',
+    covers: [diaryEntries[0].image, favorites[2].image],
+  },
+  {
+    title: 'Pendientes con intención',
+    description: 'Historias recomendadas por amigos y críticos de confianza.',
+    count: '31 películas',
+    covers: [favorites[1].image, favorites[0].image],
+  },
+];
 ---
 
-<Layout title="Kinema - Perfil de Usuario">
+<Layout title={`Kinema - Perfil de ${username}`}>
   <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12 flex flex-col gap-8 md:gap-12 pb-32 md:pb-12">
     <section class="relative overflow-hidden rounded-[28px] border border-outline-variant/20 bg-surface/70 px-6 py-8 md:px-10 md:py-10 shadow-sm">
       <div class="absolute top-[-50%] right-[-10%] h-96 w-96 rounded-full bg-secondary-container/20 blur-3xl"></div>
@@ -82,9 +112,11 @@ const diaryEntries = [
             class="h-32 w-32 rounded-full object-cover border border-outline-variant/30 md:h-48 md:w-48"
             src={profile.image}
           />
-          <button class="absolute bottom-0 right-0 rounded-md border border-outline-variant/30 bg-surface p-2 text-on-surface transition-colors hover:bg-surface-variant">
-            <span class="material-symbols-outlined" style="font-size: 20px;">edit</span>
-          </button>
+          <Button
+            class="absolute bottom-0 right-0 rounded-md border border-outline-variant/30 bg-surface p-2 text-on-surface hover:bg-surface-variant"
+            icon="edit"
+            variant="ghost"
+          />
         </div>
 
         <div class="flex flex-1 flex-col items-center text-center md:items-start md:text-left">
@@ -105,9 +137,11 @@ const diaryEntries = [
 
         <div class="flex gap-2 md:justify-end">
           <Button class="min-w-[144px]" icon="edit" label="Editar perfil" variant="secondary" />
-          <button class="rounded-md border border-outline-variant/30 bg-transparent p-2 text-on-surface-variant transition-colors hover:text-on-surface">
-            <span class="material-symbols-outlined">share</span>
-          </button>
+          <Button
+            class="rounded-md border border-outline-variant/30 bg-transparent p-2 text-on-surface-variant hover:text-on-surface"
+            icon="share"
+            variant="ghost"
+          />
         </div>
       </div>
     </section>
@@ -177,13 +211,37 @@ const diaryEntries = [
 
       <div class="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
         {favorites.map((movie) => (
-          <article class="group relative aspect-[2/3] overflow-hidden rounded-xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-            <img alt={movie.title} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src={movie.image} />
-            <div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <span class="font-headline-md text-headline-md text-white">{movie.title}</span>
-              <span class="font-label-sm text-label-sm text-primary-fixed">{movie.year}</span>
+          <Card class="relative aspect-[2/3] rounded-xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" variant="feature">
+            <div slot="media" class="absolute inset-0">
+              <img alt={movie.title} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src={movie.image} />
+              <div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <span class="font-headline-md text-headline-md text-white">{movie.title}</span>
+                <span class="font-label-sm text-label-sm text-primary-fixed">{movie.year}</span>
+              </div>
             </div>
-          </article>
+          </Card>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="font-headline-md text-headline-md text-on-surface">Mis listas</h2>
+        <Button class="p-0 text-secondary hover:text-primary" label="Ver todas" variant="ghost" />
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {userLists.map((list) => (
+          <Card class="overflow-hidden border border-outline-variant/20" variant="feature" bodyClass="p-5">
+            <div slot="media" class="grid h-36 grid-cols-2 gap-1 overflow-hidden bg-surface-container-highest">
+              {list.covers.map((cover) => (
+                <img alt="" class="h-full w-full object-cover" src={cover} />
+              ))}
+            </div>
+            <h3 class="font-headline-md text-headline-md text-on-surface">{list.title}</h3>
+            <p class="mt-2 font-body-md text-body-md text-on-surface-variant">{list.description}</p>
+            <span class="mt-4 block font-label-sm text-label-sm text-secondary">{list.count}</span>
+          </Card>
         ))}
       </div>
     </section>
@@ -196,19 +254,23 @@ const diaryEntries = [
 
       <div class="flex flex-col">
         {diaryEntries.map((entry) => (
-          <div class="group flex cursor-pointer items-center gap-4 border-b border-outline-variant/20 py-6 transition-colors hover:bg-surface-container-low/50">
-            <img alt={entry.title} class="h-24 w-16 rounded-md object-cover shadow-sm" src={entry.image} />
-            <div class="flex-grow">
-              <div class="mb-1 flex items-start justify-between gap-4">
-                <div>
-                  <h3 class="font-label-md text-label-md text-on-background">{entry.title}</h3>
-                  <p class="font-label-sm text-label-sm text-outline">{entry.meta}</p>
-                </div>
-                <span class="font-label-sm text-label-sm text-secondary">Hace 2 días</span>
-              </div>
-              <p class="font-body-md text-body-md text-on-surface-variant">{entry.excerpt}</p>
+          <Card
+            class="group flex cursor-pointer items-center gap-4 border-b border-outline-variant/20 py-6 transition-colors hover:bg-surface-container-low/50"
+            bodyClass="grow"
+            variant="feature"
+          >
+            <div slot="media" class="h-24 w-16 shrink-0 overflow-hidden rounded-md shadow-sm">
+              <img alt={entry.title} class="h-full w-full object-cover" src={entry.image} />
             </div>
-          </div>
+            <div class="mb-1 flex items-start justify-between gap-4">
+              <div>
+                <h3 class="font-label-md text-label-md text-on-background">{entry.title}</h3>
+                <p class="font-label-sm text-label-sm text-outline">{entry.meta}</p>
+              </div>
+              <span class="font-label-sm text-label-sm text-secondary">Hace 2 días</span>
+            </div>
+            <p class="font-body-md text-body-md text-on-surface-variant">{entry.excerpt}</p>
+          </Card>
         ))}
       </div>
     </section>

@@ -1,0 +1,12 @@
+<template>
+  <footer class="w-full py-12 px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter bg-background border-t border-outline-variant/30 mt-auto hidden md:flex">
+    <div class="font-headline-md text-headline-md font-bold text-on-surface-variant">Kinema</div>
+    <p class="font-body-md text-body-md text-on-surface-variant/70">© 2024 Kinema. Made for movie lovers.</p>
+    <div class="flex gap-6">
+      <a class="font-label-sm text-label-sm text-on-surface-variant/70 hover:text-secondary transition-all duration-300" href="#">About</a>
+      <a class="font-label-sm text-label-sm text-on-surface-variant/70 hover:text-secondary transition-all duration-300" href="#">Privacy</a>
+      <a class="font-label-sm text-label-sm text-on-surface-variant/70 hover:text-secondary transition-all duration-300" href="#">Terms</a>
+      <a class="font-label-sm text-label-sm text-on-surface-variant/70 hover:text-secondary transition-all duration-300" href="#">API</a>
+    </div>
+  </footer>
+</template>
