@@ -33,4 +33,10 @@ class Movie extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    // Una película pertenece a un cluster/vibra (usado en index/search/show)
+    public function vibe()
+    {
+        return $this->belongsTo(Vibe::class);
+    }
 }
