@@ -1,6 +1,7 @@
 ---
 import Layout from "../../../../layouts/Layout.vue";
 import Button from "../../../../components/Button.vue";
+import ListDetail from "../../../../components/ListDetail.vue";
 
 export function getStaticPaths() {
   return [
@@ -10,16 +11,29 @@ export function getStaticPaths() {
 }
 
 const { username, slug } = Astro.params;
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 
-const movies = [
+let apiList = null;
+try {
+  const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username || '')}/lists/${encodeURIComponent(slug || '')}`);
+  if (res.ok) apiList = await res.json();
+} catch (e) {
+  console.error('Lista API falló, usando mock:', e);
+}
+
+// Cada slug es único POR USUARIO: el mismo slug en otro usuario trae otras películas
+const listTitle = apiList?.name ?? 'Películas para llorar en domingo';
+const listDescription = apiList?.description ?? 'Una lista curada para tardes lentas, finales emocionales y una caja de pañuelos cerca de la pantalla.';
+const listOwner = apiList?.user?.name ?? username;
+const listItems = apiList?.items ?? [];
+
+const mockMovies = [
   {
     title: "El Diario de Noa",
     year: "2004",
     rating: "4.8",
     image:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuDRwVTdn9sWk160zDlJcouiny65fzLpKjiPCK_j0Y112S97Ey5CEaZXiui_PlDQqcV0RaUJwjzRUNX4eXI8EO9nbjnbS9Rhtxp9MOeWMZs1RxqgbPnlBIEkhHJZA1qUjyFskayncWJggHEK--McTZrUtvGZBw8mYZrZsTBpumLAhxxpt3C_XO-TPlNe65eSiXor-7_Shfu4c9GV5N6zQfPwkDAHTscF9rRevCrtbypWyu52PbgtFjV3e1D-HhmX0XxZ8bhpBuzN1UI",
-    description:
-      "A minimalist movie poster featuring two lovers embracing in the rain.",
   },
   {
     title: "Manchester by the Sea",
@@ -27,31 +41,11 @@ const movies = [
     rating: "4.5",
     image:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBz2HrF9ADsT8IWAGyTLwjsjBwHc_M03XZ2dE3g2y-C2mUcFui3UeR_RNQwV9TTIL_eIbEL6JTH06v4KxjDLSIzXkFxf-Gsua9KtxoQn-ZYLibSkDayVe_tNKTvwlh08y8Kb4kN6oPwgOotMvbXUWUb-VyqjLmONNhaz9i0F1wKMxcXYRMSabOOJGqgUTYtZGwxUUKO-RwRMXoCJfA9IEKslE-QsX0rf9v10jSjYp9QyOaGXlQkYrRN7gKsHkAzz1AFKS8bAq-bMJw",
-    description:
-      "A stylized movie poster for a drama, showing a lone figure on a road toward sunset.",
-  },
-  {
-    title: "La Lista de Schindler",
-    year: "1993",
-    rating: "4.9",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBWjnirIpVhBNmY_8pNoojsfUqK68f3d7wtPRt7QT5TjpR1D6GaKQikKYJDv-M12ObJ2JzLg434GEv7_yBf3gIZ7hZ3wXslKyl717pPuUWdKZV6DbSOrZP7MDSx9AfyO3KfGUZnljuKx8ub-U-1sDtAsUudI3vD8DEzvL5Ljeku8y8K5fBjioY8KzWGYqtoOtm_kSdR4DKnX37ugswDmSYzdONMlvptx4AbrenR5HQS3YgDrnqesq_DPjSz5WjaQcc1OWy6BwIzYqY",
-    description:
-      "An artistic poster depicting a young girl holding a red balloon over a rainy city.",
-  },
-  {
-    title: "Antes del Amanecer",
-    year: "1995",
-    rating: "4.7",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuA3k3g4oM3M2B2F4rWZ2a3VNOXEvJ04x6fkvY0SliR7r3u3MDN6x5K8n4D7gY8Z0z6hT9A_6K6t2g0D7sUo_5n6E5G2Or1wS0kQHqT0lM3lS5Z8u7A-HLJ49060Q2iG7Tx5G5t1xA0v7P4zS7Uo9Vh4o1rj6Vxk-l3q1hZ3F8z4jNQ7b7d-c7M5AaQ",
-    description:
-      "A quiet romantic poster with soft, cinematic tones and an intimate atmosphere.",
   },
 ];
 ---
 
-<Layout title={`Kinema - Lista de ${username}/${slug}`}>
+<Layout title={`Kinema - ${listTitle} de ${username}`}>
   <main
     class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 pb-32 md:pb-12"
   >
@@ -61,25 +55,28 @@ const movies = [
       >
         <div class="flex-1">
           <div class="flex items-center gap-2 mb-2">
-            <img
-              alt="Creator"
-              class="w-6 h-6 rounded-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLoLkkPW1KIxjNdh6TFHwiYmHAKQIemgAVg0IyldJjg-NQpopQxSwgCdt9C3k1r_m03n3GXfPWZFU8Vpkk6V7XTwN0_l8K_LjN3f7LLGm5DonSqbFvgzlNyQgF_r0XlAdSd6rNqMD6RDGCO9Ympiy0wWVZzoXG3NGmT6tsu1HN2HiDsxXdfiM7EeXhhpPO0IflYT6ot5B4p3hWLiOXtMDTfAoBNgyvMbasbHo9O2r9dX-0r97_5Dvf6PpWtHyFiI4JYk_7_2k1FHE"
-            />
+            <div class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center font-bold text-[12px] text-on-secondary-container">
+              {(listOwner || '?').charAt(0).toUpperCase()}
+            </div>
             <span class="font-label-md text-label-md text-on-surface-variant">
-              Creado por @cinemania
+              Creado por @{listOwner}
             </span>
+            {!apiList?.is_public && (
+              <span class="font-label-sm text-label-sm px-3 py-1 rounded-full border border-outline-variant/50 text-on-surface-variant">Privada</span>
+            )}
           </div>
 
           <h1 class="font-headline-xl text-headline-xl text-primary mb-4">
-            Películas para llorar en domingo
+            {listTitle}
           </h1>
           <p
             class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"
           >
-            Una lista curada para tardes lentas, finales emocionales y una caja
-            de pañuelos cerca de la pantalla.
+            {listDescription}
           </p>
+          {apiList && (
+            <p class="mt-2 font-label-sm text-label-sm text-on-surface-variant">{listItems.length} películas</p>
+          )}
         </div>
 
         <div class="flex flex-wrap gap-4">
@@ -88,7 +85,6 @@ const movies = [
             label="Copiar lista"
             variant="secondary"
           />
-          <!-- ¡Corregido! En archivos .astro se usan llaves para booleanos -->
           <Button
             icon="favorite"
             iconFilled={true}
@@ -99,15 +95,19 @@ const movies = [
       </div>
     </section>
 
+    {apiList ? (
+      <ListDetail client:load listId={apiList.id} initialItems={listItems} />
+    ) : (
+    <>
     <section class="mb-12">
       <div
-        class="border border-outline-variant rounded-md p-2 flex items-center relative"
+        class="border border-outline-variant rounded-full p-2 flex items-center relative glass-panel"
       >
         <span class="material-symbols-outlined text-outline ml-3 absolute">
           search
         </span>
         <input
-          class="w-full bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface pl-10 py-3 rounded-md placeholder-outline-variant"
+          class="w-full bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface pl-10 py-3 rounded-full placeholder-outline-variant"
           placeholder="Buscar película para añadir..."
           type="text"
         />
@@ -117,8 +117,8 @@ const movies = [
 
     <section class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
       {
-        movies.map((movie) => (
-          <article class="relative group rounded-lg overflow-hidden ambient-shadow-bondi hover:scale-[1.02] transition-transform duration-300">
+        mockMovies.map((movie) => (
+          <article class="relative group rounded-xl overflow-hidden ambient-shadow-bondi hover:scale-[1.02] transition-transform duration-300">
             <img
               alt={movie.title}
               class="w-full aspect-[2/3] object-cover"
@@ -147,5 +147,7 @@ const movies = [
         ))
       }
     </section>
+    </>
+    )}
   </main>
 </Layout>

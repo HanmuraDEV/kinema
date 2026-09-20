@@ -1,0 +1,42 @@
+---
+import '../styles/global.css';
+import RegisterForm from '../components/RegisterForm.vue';
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <title>Kinema - Crear cuenta</title>
+  </head>
+  <body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased selection:bg-secondary-container selection:text-on-secondary-container">
+    <main class="relative flex flex-grow items-center justify-center overflow-hidden p-margin-mobile md:p-margin-desktop">
+      <div class="absolute left-[-10%] top-[-10%] h-[50vw] w-[50vw] rounded-full bg-secondary-container/20 blur-[100px] -z-10"></div>
+      <div class="absolute bottom-[-10%] right-[-10%] h-[40vw] w-[40vw] rounded-full bg-primary-container/20 blur-[80px] -z-10"></div>
+
+      <div class="relative z-10 w-full max-w-md">
+        <div class="mb-8 text-center">
+          <h1 class="mb-2 font-headline-xl text-headline-xl text-secondary">Kinema</h1>
+          <p class="font-body-lg text-body-lg text-on-surface-variant">Crea tu diario de cine personal.</p>
+        </div>
+
+        <div class="mb-8 flex gap-4 border-b border-outline-variant/30 pb-2 justify-center">
+          <a href="/login" class="rounded-none px-2 pb-2 text-on-surface-variant hover:text-secondary">Iniciar Sesión</a>
+          <span class="rounded-none border-b-2 border-secondary px-2 pb-2 text-secondary">Registrarse</span>
+        </div>
+
+        <RegisterForm client:load />
+      </div>
+    </main>
+  </body>
+</html>

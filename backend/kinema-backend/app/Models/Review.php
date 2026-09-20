@@ -28,4 +28,10 @@ class Review extends Model
     {
         return $this->belongsTo(Movie::class);
     }
+
+    // Una reseña tiene muchos comentarios
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->latest();
+    }
 }

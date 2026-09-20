@@ -1,0 +1,4 @@
+# Node local de la raíz (solo para tooling como @omniroute/opencode-provider)
+node_modules/
+pnpm-debug.log*
+config

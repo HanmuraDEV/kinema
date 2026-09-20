@@ -51,4 +51,15 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
+    // Las personas a las que YO sigo
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id')->withTimestamps();
+    }
+
+    // Las personas que ME siguen a mí
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')->withTimestamps();
+    }
 }

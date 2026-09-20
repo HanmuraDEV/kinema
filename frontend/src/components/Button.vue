@@ -3,7 +3,7 @@
     :is="isLink ? 'a' : 'button'"
     :href="isLink ? href : undefined"
     :type="!isLink ? type : undefined"
-    class="group inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 font-label-md text-label-md transition-all duration-300 ease-out cursor-pointer active:scale-95"
+    class="group inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 font-label-md text-label-md transition-all duration-300 ease-out cursor-pointer active:scale-95"
     :class="variantClasses[variant]"
   >
     <!-- Ícono con leve animación de escala al hacer hover en el botón -->

@@ -20,6 +20,25 @@ class MovieController extends Controller
         return response()->json($movies);
     }
 
+    // 2b. Búsqueda por título (para search.astro + añadir a listas)
+    public function search(Request $request)
+    {
+        $q = trim($request->query('q', ''));
+
+        if (mb_strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $movies = Movie::with('vibe:id,name')
+            ->select('id', 'title', 'poster_path', 'release_date', 'vibe_id')
+            ->where('title', 'ILIKE', "%{$q}%")
+            ->orderBy('release_date', 'desc')
+            ->take(20)
+            ->get();
+
+        return response()->json($movies);
+    }
+
     // 2. Detalle de una sola película
     public function show($id)
     {

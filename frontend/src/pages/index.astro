@@ -2,61 +2,36 @@
 import Layout from '../layouts/Layout.vue';
 import Card from '../components/Card.vue';
 import Button from '../components/Button.vue';
+import FeedActivity from '../components/FeedActivity.vue';
 
-const discoveryMovies = [
-  {
-    title: 'Neon Echoes',
-    genre: 'Sci-Fi',
-    year: '2024',
-    rating: '4.8',
-    poster:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDWHQAA2XSTsEp4-ADXL2OrOeUC9yyZQmfG6ZcaI0_3CsPUa5DTUeu-rDtaKWqP56HN3sGbja_THXb8QZFFgIgCrdCGoUc_wDSCFG8FqQD4JjgzSSevhCZ7sN63mVML3o4gI9UCu5mCCV0Td73CGXBMESR3CuZleb2c3llTzJnZ6sjqez0mioGp0iDv-5_u16yzyTYrtu4g2PlYd7mgWjyG2iLS1iBzWFOtd1FMIjVzqez93Kx2HnWwoCk8NXEqpHbsUnWbg4CK2Es',
-    accent: 'text-secondary-fixed',
-  },
-  {
-    title: 'El Horizonte Salado',
-    genre: 'Drama',
-    year: '2023',
-    rating: '4.2',
-    poster:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAz65Pv1l_NsP2WozhEPHA-V2SRANPbD1eKb05AX9m-533aUXW-0ioIzq2Tqs7CnDJbkNg02gty13NF1hydU0IOcmzRDYrB6lqMmCLdBup5ypN8Ge8SixRcJ8rAyU2eookxzNr_O8QX48rQDc31vH-FzQCFRcjvWpPvaSVGV58HJc6WGOJy-cHHBfO2ApvGZBoW6oV2oriSzvIp-Vs_JvE2KnzqOjakYvW1M8iOPJG_SYl-OJkzZJ2H5rktHSyjSS-j0l54AzYLzsY',
-    accent: 'text-primary-fixed',
-  },
-  {
-    title: 'Digital Nostalgia',
-    genre: 'Documental',
-    year: '2024',
-    rating: '4.9',
-    poster:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBjNb_yCtU8WPQmgpd6uwv32eE3ATVLA3E-pmA4iBqEigJDQCell3-l28K8ntTN17AnuobG4zIEoD6o9WbvoDdcIS7zHDtqJuB3EEWI2pZbIhw5UgziSR5fBRGKM1IEwn3mFRXSmEwenvnVdLwRrhG3g0tGBHl_P4onMFB2EPL-vEsQJCqbEyLO_vDc4gZ4N4-Dqro_XExtMlA7MNlP-G3jsa6dwc7JFMJaRr4aBZz_fO5JMnUcZxahLRyq5AdlSgWqtaqxhU1aHQE',
-    accent: 'text-secondary-fixed',
-  },
-];
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 
-const activityItems = [
-  {
-    name: 'Laura',
-    action: 'vio',
-    title: 'Cyber Dreams',
-    rating: 4,
-    caption: '',
-  },
-  {
-    name: 'Miguel',
-    action: 'añadió',
-    title: 'El Horizonte Salado',
-    meta: 'a su lista',
-    listName: 'Para ver',
-    time: 'Hace 2 horas',
-  },
-  {
-    name: 'Sofía',
-    action: 'vio',
-    title: 'Neon Echoes',
-    rating: 5,
-    caption: '"Visualmente impresionante, aunque el ritmo decae en el segundo acto."',
-  },
-];
+let discoveryMovies = [];
+try {
+  const res = await fetch(`${API_URL}/api/movies`);
+  if (res.ok) {
+    const json = await res.json();
+    const list = json.data ?? json;
+    discoveryMovies = (Array.isArray(list) ? list : []).slice(0, 3).map((m) => ({
+      id: m.id,
+      title: m.title,
+      genre: m.vibe?.name ?? 'Cine',
+      year: (m.release_date || '').toString().slice(0, 4),
+      rating: '—',
+      poster: m.poster_path || '',
+    }));
+  }
+} catch (e) {
+  console.error('No se pudo cargar el catálogo:', e);
+}
+
+if (discoveryMovies.length === 0) {
+  discoveryMovies = [
+    { id: null, title: 'Neon Echoes', genre: 'Sci-Fi', year: '2024', rating: '4.8', poster: '' },
+    { id: null, title: 'El Horizonte Salado', genre: 'Drama', year: '2023', rating: '4.2', poster: '' },
+    { id: null, title: 'Digital Nostalgia', genre: 'Documental', year: '2024', rating: '4.9', poster: '' },
+  ];
+}
 ---
 
 <Layout title="Kinema - Inicio">
@@ -71,29 +46,30 @@ const activityItems = [
             Tendencias actuales en el cine mundial.
           </p>
         </div>
+        <a href="/search" class="font-label-md text-label-md text-secondary hover:underline">Ver catálogo</a>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pb-8 pt-4">
         {discoveryMovies.map((movie) => (
-          <article class="min-w-0 h-[400px] md:h-[500px] rounded-xl relative overflow-hidden group cursor-pointer transition-transform duration-300 hover:-translate-y-2 border border-outline-variant/20">
-            <img
-              alt="Movie Poster"
-              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              src={movie.poster}
-            />
+          <a href={movie.id ? `/movie?id=${movie.id}` : '/search'} class="min-w-0 h-[400px] md:h-[500px] rounded-xl relative overflow-hidden group cursor-pointer transition-transform duration-300 hover:-translate-y-2 border border-outline-variant/20 ambient-shadow-secondary block">
+            {movie.poster ? (
+              <img
+                alt={movie.title}
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                src={movie.poster}
+              />
+            ) : (
+              <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-secondary-container/40 to-primary-container/40 flex items-center justify-center p-8 text-center font-headline-md text-headline-md text-on-surface-variant">{movie.title}</div>
+            )}
             <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/20 to-transparent"></div>
             <div class="absolute bottom-0 left-0 w-full p-6 text-on-primary">
               <div class="flex gap-2 mb-3">
-                <span class="bg-inverse-surface/70 text-on-primary text-label-sm font-label-sm px-3 py-1 rounded-md">{movie.genre}</span>
-                <span class="bg-inverse-surface/70 text-on-primary text-label-sm font-label-sm px-3 py-1 rounded-md">{movie.year}</span>
+                <span class="bg-inverse-surface/70 text-on-primary text-label-sm font-label-sm px-3 py-1 rounded-full">{movie.genre}</span>
+                <span class="bg-inverse-surface/70 text-on-primary text-label-sm font-label-sm px-3 py-1 rounded-full">{movie.year}</span>
               </div>
               <h2 class="font-headline-md text-headline-md font-bold mb-1">{movie.title}</h2>
-              <div class={`flex items-center gap-1 ${movie.accent}`}>
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
-                <span class="font-label-md text-label-md">{movie.rating}</span>
-              </div>
             </div>
-          </article>
+          </a>
         ))}
       </div>
     </section>
@@ -102,107 +78,24 @@ const activityItems = [
       <section class="md:col-span-5 flex flex-col gap-6">
         <div class="flex items-center justify-between">
           <h3 class="font-headline-md text-headline-md text-primary">Actividad de Amigos</h3>
-          <Button class="p-0 text-secondary hover:text-primary" label="Ver todo" variant="ghost" />
         </div>
-
-        <div class="flex flex-col">
-          {activityItems.map((item, index) => (
-            <article class="flex gap-4 py-4 border-b border-outline-variant/30 last:border-b-0 cursor-pointer hover:bg-surface-container/50 transition-colors">
-              <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                <img
-                  alt="Friend Profile"
-                  class="w-full h-full object-cover"
-                  src={index === 0
-                    ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8SehghBuPPXsT_fsGPx4oWJhhJwuXar7VyX255Jn4zYBvUoI2pDQsXynchC5ZNpI-wUMM0zv6komj31LvpssEavbz_s_00hQX2Aml-tYVuahDo2UwlsZgYNOAH4FOTRh7lM0KAr_eAb6ESVrda2wwZhN3OTjpMEPuSLevWin4Z9mjt7G7cEHSXQdA5xt15GvTJmK_vvhO6ET2NzkCPmMZRK12vzvwVJn4G6QdDupDapRhan_J9DEeu6WcF8n79eLJ4hKFBKEcvBA'
-                    : index === 1
-                      ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5Ts0yvN8GwBFbjUGJ3HFt_MN3cS57wVpqndYRTc7UqoYNSVc-alhN9zwFzC4Diy4qpB4G7CNlksTOdId0sz9ItqsD6TJz8mx7_nRGHUncify3Yp9_54ToR7ByEduaEhPvjUN5Q5u_PfVFeY_KH3_pgNFmWiI09GsvGLObeZbFj8zMEQLL9a45OfbayXMGzHeqhf7bKzO1XnxgohMuScXVfllUjF2Ui0nubHR3x2QP9e6etilm10VElhgA4s__ijR8wopkeM2_NL0'
-                      : 'https://lh3.googleusercontent.com/aida-public/AB6AXuC6YrSFn55U7vNYClDkD9Esg-sMiHQb4a9f0rnUSCZHrfYC55PGjZYC7EuF8RFbMbi2baUuRPQOvds6TBz0oRB-DF_8HmCgMeucXg93TqRY0AlCkP_UfHc54U2_kiqjajbJ2fULgRpJ2gYu07WPnDxv2v4Bzyu0dRhRhq02cH2ocHWP-8l14OH4x074UGhX2nXK_0C6qdq5WY0SyZ9J-TDocbXVVE1nyzIMXsN-bEkXmYVYg6lfsjXLMdgH04OCuSSe3-WMpuPiiLk'}
-                />
-              </div>
-              <div class="flex-grow">
-                <p class="font-body-sm text-body-md">
-                  <span class="font-bold text-on-surface">{item.name}</span>
-                  {' '}{item.action}{' '}
-                  <span class="font-semibold text-secondary">{item.title}</span>
-                  {item.meta ? ` ${item.meta} ` : ''}
-                  {item.listName ? <span class="italic text-on-surface-variant">{item.listName}</span> : ''}
-                </p>
-
-                {item.rating ? (
-                  <div class="flex text-tertiary mt-1">
-                    {Array.from({ length: 4 }).map(() => (
-                      <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                    ))}
-                    <span class="material-symbols-outlined text-[16px]">star</span>
-                  </div>
-                ) : null}
-
-                {item.time ? <p class="text-label-sm font-label-sm text-on-surface-variant/70 mt-1">{item.time}</p> : null}
-
-                {item.caption ? (
-                  <p class="text-body-md mt-2 text-on-surface-variant italic border-l-2 border-outline-variant/50 pl-3 py-1">
-                    {item.caption}
-                  </p>
-                ) : null}
-              </div>
-            </article>
-          ))}
-        </div>
+        <FeedActivity client:load />
       </section>
 
       <section class="md:col-span-7 flex flex-col gap-6 mt-12 md:mt-0">
         <div class="flex items-center justify-between">
           <h3 class="font-headline-md text-headline-md text-primary">Personalizado para ti</h3>
-          <span class="text-secondary text-label-sm font-label-sm px-3 py-1 rounded-md border border-secondary/30">Basado en tu perfil</span>
+          <span class="text-secondary text-label-sm font-label-sm px-3 py-1 rounded-full border border-secondary/30">Basado en tu perfil</span>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <Card
-            imageAlt="Movie Scene"
-            imageSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuD3_SovpNkMdZiuprCHISlBAcmYZZFRBk6J_9CUJnvujNMkuuMqvkFTtq8QDsSaf23olTxjoovnIsqecczJ9QjeGlsc_h_ZNh8wH-MNZkNSa19dMvcV0XQgFXIXihj-62zj9DE7dUwmkyLQ2Z5q2oqgUNWiUDxTso_B93FaeyhslgMvNCDU25xEycR--3X23A1GjzZCU_NNCjm-q7opQSPGGPZfG_8fhiv2UDtCLwJU28HC02blryXS0q3xEhWew8voRmp0_gWDQG8"
-            variant="default"
-          >
-            <h4 class="font-label-md text-label-md font-bold text-on-surface mb-1">Tardes de Domingo</h4>
-            <p class="font-label-sm text-label-sm text-outline mb-2">Comedia Indie • 2022</p>
-            <div class="flex items-center justify-between">
-              <span class="text-primary font-bold text-label-md">98% Match</span>
-              <Button
-                class="w-8 h-8 p-0 rounded-md bg-secondary-container text-on-secondary-container flex items-center justify-center hover:bg-secondary-container/80 transition-colors"
-                icon="add"
-                variant="secondary"
-              />
-            </div>
-          </Card>
-
-          <Card
-            imageAlt="Movie Scene"
-            imageSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuAmd5iSZBuZd9-4AkZEIRh9aKmCAEjWfkcl4wyqc-UgplGtZ1bCFhwYX0MMtwjzb7YoBjmQuSpZk0-08EW0UlsTRstuSQLpr5qP1T4ljpWTtJE9_5xIAyCb42uWB5ksbSb0yjWOymo3c3zNSIJhnEIT0sb1TJC6JRpBbD-V19uXTxu3x1c_rgHLMluVMNQPTgSWO104adAWw0nei_GWp3aqmrvS0CKM-5MFgcqS4hPUjfXgjl6BysRMpAQNfnqiduS6YawVYOrXp9M"
-            variant="default"
-          >
-            <h4 class="font-label-md text-label-md font-bold text-on-surface mb-1">Ondas Sintéticas</h4>
-            <p class="font-label-sm text-label-sm text-outline mb-2">Documental Musical • 2021</p>
-            <div class="flex items-center justify-between">
-              <span class="text-primary font-bold text-label-md">95% Match</span>
-              <Button
-                class="w-8 h-8 p-0 rounded-md bg-secondary-container text-on-secondary-container flex items-center justify-center hover:bg-secondary-container/80 transition-colors"
-                icon="add"
-                variant="secondary"
-              />
-            </div>
-          </Card>
-
-          <Card class="col-span-2" mediaClass="h-auto" variant="feature">
-            <div slot="media" class="w-12 h-12 flex items-center justify-center text-primary mr-4 flex-shrink-0">
-              <span class="material-symbols-outlined text-[32px]">auto_awesome</span>
-            </div>
-            <div class="flex flex-row items-center py-4">
-              <div class="flex-grow">
-                <h4 class="font-label-md text-label-md font-bold text-on-surface">Explorar Colección: Neo-Tokyo</h4>
-                <p class="font-body-sm text-body-md text-on-surface-variant/80 mt-1">Porque te gustó "Akira" y "Ghost in the Shell".</p>
-              </div>
-              <span class="material-symbols-outlined text-primary">chevron_right</span>
-            </div>
-          </Card>
+        <div class="glass-panel rounded-xl p-6">
+          <p class="font-body-md text-body-md text-on-surface-variant">
+            Tus recomendaciones aparecen cuando calificas películas y sigues a otros cinéfilos.
+          </p>
+          <div class="mt-4 flex gap-3">
+            <a href="/search"><Button label="Descubrir" variant="primary" /></a>
+            <a href="/register"><Button label="Crear cuenta" variant="secondary" /></a>
+          </div>
         </div>
       </section>
     </div>

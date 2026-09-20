@@ -7,6 +7,24 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    // Reseñas de una película (público, paginado)
+    public function index(Request $request, $movieId)
+    {
+        $reviews = Review::with('user:id,name')
+            ->where('movie_id', $movieId)
+            ->latest()
+            ->paginate(10);
+
+        return response()->json($reviews);
+    }
+
+    public function show($id)
+    {
+        $review = Review::with(['user:id,name', 'movie:id,title,poster_path'])->findOrFail($id);
+
+        return response()->json($review);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -37,5 +55,40 @@ class ReviewController extends Controller
             'message' => 'Reseña guardada con éxito',
             'review' => $review
         ], 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $review = Review::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        $request->validate([
+            'content' => 'nullable|string|max:2000',
+            'rating' => 'nullable|numeric|min:0.5|max:5.0',
+            'has_spoilers' => 'boolean',
+        ]);
+
+        $review->update([
+            'content' => $request->input('content', $review->content),
+            'rating' => $request->input('rating', $review->rating),
+            'has_spoilers' => $request->input('has_spoilers', $review->has_spoilers),
+        ]);
+
+        return response()->json([
+            'message' => 'Reseña actualizada',
+            'review' => $review->fresh(),
+        ]);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $review = Review::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        $review->delete();
+
+        return response()->json(['message' => 'Reseña eliminada']);
     }
 }

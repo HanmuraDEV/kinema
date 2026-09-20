@@ -1,6 +1,7 @@
 ---
 import '../../styles/global.css';
 import Button from '../../components/Button.vue';
+import CommentsSection from '../../components/CommentsSection.vue';
 
 export function getStaticPaths() {
   return [
@@ -10,18 +11,37 @@ export function getStaticPaths() {
 }
 
 const { username } = Astro.params;
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+const reviewId = Astro.url.searchParams.get('id');
+
+let apiReview = null;
+let apiComments = [];
+if (reviewId) {
+  try {
+    const res = await fetch(`${API_URL}/api/reviews/${reviewId}`);
+    if (res.ok) apiReview = await res.json();
+  } catch (e) { console.error('review show falló:', e); }
+  try {
+    const res = await fetch(`${API_URL}/api/reviews/${reviewId}/comments`);
+    if (res.ok) {
+      const json = await res.json();
+      apiComments = json.data ?? json ?? [];
+    }
+  } catch (e) { console.error('comments falló:', e); }
+}
 
 const review = {
-  author: '@cinelover99',
-  title: 'Una obra maestra visual',
-  movie: 'El Viaje de Chihiro (2001)',
-  rating: 4.5,
+  author: apiReview?.user?.name ? `@${apiReview.user.name}` : '@cinelover99',
+  title: apiReview ? `Reseña de ${apiReview.movie?.title ?? 'la película'}` : 'Una obra maestra visual',
+  movie: apiReview ? `${apiReview.movie?.title ?? ''}` : 'El Viaje de Chihiro (2001)',
+  rating: apiReview?.rating ?? 4.5,
   postedAgo: 'Publicado hace 2 días',
   avatar:
     'https://lh3.googleusercontent.com/aida-public/AB6AXuBo_puiE-L4l2IDnDqNy_FIozPDiSTa8HJVw5QyA5YuwxZFFGFwEHO-ZczCWB_ZSrzYrdjVRl009baXcar56C9LEawSIlphXyTB7h0WZYXP0_yQNanCetPWq9A8PSsdIBuHxuMFU6DXNPWTt70AD9HkvXgJVxOEd7tOTWLNRf99_EW5FD_ZAPXOY6qtX17cmUL_VGaa_N4Ik_sCIqeLvE2v-KWi5qzZQznPasrdRDBJV-dQ1sA8gUQeKhy4-02fBi0x38TO2RnvOKI',
   poster:
+    apiReview?.movie?.poster_path ||
     'https://lh3.googleusercontent.com/aida-public/AB6AXuB-ig6PImUs5j3GqTiKtOj0a3GhmEQcwcbcYPDmQkJUElGvoOe3NlIG6_Rihg33_88SCYsp4F_At83xcrsUxgIJCSTFQGkivlyGuULhUhqU-i4Sy7nJLKhVrHM1f2qF9sjTDRI3e67ncMqMj3pnIbcIR6mPM0kpCADDUBsSS6r7_RFOSMVDYRAK4YezU9tzM46G25Ws0Ui3DRsMRNUsfAl6pkq42efNzSQ3QVmqfiITUcvCtmBm2G5N25lQ6NYKztkUotf_qIrSEtQ',
-  paragraphs: [
+  paragraphs: apiReview?.content ? [apiReview.content] : [
     'Revisitar esta película después de tantos años es una experiencia casi mística. La animación de Studio Ghibli no ha envejecido ni un solo día; de hecho, en la era de la sobreabundancia de CGI, el trabajo artesanal se siente aún más valioso y táctil.',
     'Lo que más me impactó en este visionado fue la sutileza del diseño de sonido. Cada paso en la casa de baños, el silbido del tren sobre el agua... todo contribuye a una atmósfera que es simultáneamente alienante y reconfortante.',
     'El ritmo de la narrativa permite respirar, algo raro en el cine contemporáneo. Una joya absoluta que sigue siendo el estándar de oro de la animación tradicional.',
@@ -122,6 +142,9 @@ const comments = [
       </div>
     </article>
 
+    {reviewId ? (
+      <CommentsSection client:load reviewId={reviewId} initialComments={apiComments} />
+    ) : (
     <section>
       <h2 class="mb-6 flex items-center gap-2 font-headline-md text-headline-md font-bold text-on-surface">
         <span class="material-symbols-outlined text-secondary">chat_bubble</span>
@@ -133,7 +156,7 @@ const comments = [
           T
         </div>
         <div class="flex-1">
-          <textarea class="w-full resize-none rounded-md border border-outline-variant/50 bg-surface-container-lowest p-3 font-body-md text-body-md text-on-surface outline-none transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/50" placeholder="Añade un comentario..." rows="2"></textarea>
+          <textarea class="w-full resize-none rounded-xl border border-outline-variant/50 bg-surface-container-lowest p-3 font-body-md text-body-md text-on-surface outline-none transition-all focus:border-secondary" placeholder="Añade un comentario..." rows="2"></textarea>
           <div class="mt-2 flex justify-end">
             <Button class="text-[13px]" label="Publicar" variant="primary" />
           </div>
@@ -163,6 +186,7 @@ const comments = [
         ))}
       </div>
     </section>
+    )}
   </main>
   </body>
 </html>
