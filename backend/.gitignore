@@ -1,2 +1,4 @@
 .env
 python/src/__pycache__
+venv
+auditar_modelos.py

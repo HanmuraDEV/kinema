@@ -16,6 +16,15 @@ class ProfileController extends Controller
         return response()->json($user);
     }
 
+    // Ver perfil por username (name) con contadores sociales
+    public function showByUsername($username)
+    {
+        $user = User::with('profile')->where('name', $username)->firstOrFail();
+        $user->loadCount(['followers', 'followings']);
+
+        return response()->json($user);
+    }
+
     // Actualizar el Top 4 y la biografía (Protegido)
     public function update(Request $request)
     {

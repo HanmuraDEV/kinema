@@ -2,6 +2,8 @@
 import Layout from '../../layouts/Layout.vue';
 import Card from '../../components/Card.vue';
 import Button from '../../components/Button.vue';
+import AuthGuard from '../../components/AuthGuard.vue';
+import FollowButton from '../../components/FollowButton.vue';
 
 export function getStaticPaths() {
   return [
@@ -11,17 +13,27 @@ export function getStaticPaths() {
 }
 
 const { username } = Astro.params;
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+
+let apiProfile = null;
+try {
+  const res = await fetch(`${API_URL}/api/profiles/username/${encodeURIComponent(username || '')}`);
+  if (res.ok) apiProfile = await res.json();
+} catch (e) {
+  console.error('Perfil API falló, usando mock:', e);
+}
 
 const profile = {
-  name: 'Elena Rivera',
-  handle: '@elenacine',
-  bio: 'Cinéfila obsesionada con thrillers de alta tensión, ciencia ficción cerebral y joyas de autor. Documenta cada película que ve, arma listas de seguimiento y comparte reseñas con una mirada de comunidad.',
+  id: apiProfile?.id ?? null,
+  name: apiProfile?.name ?? 'Elena Rivera',
+  handle: `@${username}`,
+  bio: apiProfile?.profile?.bio ?? 'Cinéfila obsesionada con thrillers de alta tensión, ciencia ficción cerebral y joyas de autor. Documenta cada película que ve, arma listas de seguimiento y comparte reseñas con una mirada de comunidad.',
   image:
     'https://lh3.googleusercontent.com/aida-public/AB6AXuCCepcYRxJqAHy7ZA-CXV5fJLAgNmKOyZlg-x-mmrVyleOmsQhMNeHp4egysd8xotc45bolyMsG-pbvV1-C-accAbaFBUJuIpVMfbnpeo8ueYRM1yrgEQUsccJSAdR_5QtEPIcfCKQFXNceKC1H5YNxtJjS6yJnK50oYRk-wIxoHP_FNZ462kOAJkeBElRaWeBFk-eetFPoNaY8I9Wy59d59EkO9GimCWY4bxPGfke1Bxc1QMn3O-rBUW6_ANM4NByWj7eW_xT0Mpw',
   stats: [
-    { label: 'Películas', value: '1,248' },
+    { label: 'Seguidores', value: String(apiProfile?.followers_count ?? '342') },
+    { label: 'Siguiendo', value: String(apiProfile?.followings_count ?? '128') },
     { label: 'Este Año', value: '87' },
-    { label: 'Seguidores', value: '342' },
   ],
 };
 
@@ -102,6 +114,7 @@ const userLists = [
 ---
 
 <Layout title={`Kinema - Perfil de ${username}`}>
+  <AuthGuard client:load>
   <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12 flex flex-col gap-8 md:gap-12 pb-32 md:pb-12">
     <section class="relative overflow-hidden rounded-[28px] border border-outline-variant/20 bg-surface/70 px-6 py-8 md:px-10 md:py-10 shadow-sm">
       <div class="absolute top-[-50%] right-[-10%] h-96 w-96 rounded-full bg-secondary-container/20 blur-3xl"></div>
@@ -136,6 +149,7 @@ const userLists = [
         </div>
 
         <div class="flex gap-2 md:justify-end">
+          {profile.id && <FollowButton client:load userId={profile.id} />}
           <Button class="min-w-[144px]" icon="edit" label="Editar perfil" variant="secondary" />
           <Button
             class="rounded-md border border-outline-variant/30 bg-transparent p-2 text-on-surface-variant hover:text-on-surface"
@@ -275,4 +289,5 @@ const userLists = [
       </div>
     </section>
   </main>
+  </AuthGuard>
 </Layout>
