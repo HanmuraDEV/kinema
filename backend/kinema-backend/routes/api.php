@@ -23,6 +23,7 @@ Route::get('/movies/{id}', [MovieController::class, 'show']);
 Route::get('/movies/{id}/similar', [MovieController::class, 'similar']);
 Route::get('/movies/{movieId}/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/{id}', [ReviewController::class, 'show']);
+Route::get('/users/{id}/reviews', [ReviewController::class, 'byUser']);
 Route::get('/reviews/{id}/comments', [CommentController::class, 'index']);
 Route::get('/users/{username}/lists/{slug}', [MovieListController::class, 'showBySlug']);
 Route::get('/profiles/{id}', [ProfileController::class, 'show']);

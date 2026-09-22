@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.vue';
+import AuthGuard from '../components/AuthGuard.vue';
+import MyLists from '../components/MyLists.vue';
+---
+
+<Layout title="Kinema - Mis Listas">
+  <AuthGuard client:load>
+    <main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 pb-32 md:pb-12">
+      <div class="mb-8">
+        <h1 class="font-headline-lg-mobile md:font-headline-xl text-headline-lg-mobile md:text-headline-xl text-primary mb-2">
+          Mis Listas
+        </h1>
+        <p class="font-body-md text-body-md text-on-surface-variant">
+          Colecciones para cada ánimo y domingo.
+        </p>
+      </div>
+      <MyLists client:load />
+    </main>
+  </AuthGuard>
+</Layout>

@@ -14,27 +14,27 @@
       <title>{{ title }}</title>
     </head>
     <body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
-      <Navbar />
+      <Navbar client:load />
       <slot />
 
       <nav class="md:hidden bg-surface fixed bottom-0 left-0 w-full border-t border-outline-variant/30 z-50 flex justify-around items-center px-4 py-2 pb-safe">
-        <a class="flex flex-col items-center justify-center text-primary p-3" href="#">
+        <a class="flex flex-col items-center justify-center text-primary p-3" href="/search">
           <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">search</span>
           <span class="font-label-sm text-label-sm mt-1">Search</span>
         </a>
-        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="#">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="/diary">
           <span class="material-symbols-outlined">calendar_today</span>
           <span class="font-label-sm text-label-sm mt-1">Diary</span>
         </a>
-        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="#">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="/lists">
           <span class="material-symbols-outlined">format_list_bulleted</span>
           <span class="font-label-sm text-label-sm mt-1">Lists</span>
         </a>
-        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="#">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="/diary">
           <span class="material-symbols-outlined">add_circle</span>
           <span class="font-label-sm text-label-sm mt-1">Log</span>
         </a>
-        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="#">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant p-3 hover:text-primary transition-colors" href="/login">
           <span class="material-symbols-outlined">person</span>
           <span class="font-label-sm text-label-sm mt-1">Profile</span>
         </a>
