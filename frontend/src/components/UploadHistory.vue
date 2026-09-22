@@ -4,8 +4,7 @@
       <span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
       <h3 class="mt-2 mb-2 font-headline-md text-headline-md text-on-surface">¡Historial importado!</h3>
       <div class="font-body-md text-body-md text-on-surface-variant space-y-1">
-        <p>{{ summary.ratings }} valoraciones · {{ summary.watched }} vistas</p>
-        <p>{{ summary.watchlisted }} en watchlist · {{ summary.movies_created }} películas nuevas</p>
+        <p v-for="line in summaryLines" :key="line">{{ line }}</p>
       </div>
       <a href="/" class="inline-block mt-4">
         <Button label="Ver mi cine" variant="primary" />
@@ -44,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import api from '../services/api';
 import { useAuth } from '../composables/useAuth';
 import Button from './Button.vue';
@@ -53,6 +52,26 @@ const { isAuthenticated, checkAuth } = useAuth();
 const phase = ref('idle'); // idle | uploading | done
 const error = ref(null);
 const summary = ref({});
+
+const LABELS = {
+  ratings: 'valoraciones',
+  watched: 'vistas en el diario',
+  reviews_text: 'reseñas con texto',
+  watchlisted: 'en watchlist',
+  liked: 'likes importados',
+  lists: 'listas creadas',
+  list_items: 'películas en listas',
+  movies_matched: 'películas del catálogo',
+  movies_created: 'películas nuevas',
+  enriched: 'enriquecidas con TMDB',
+  merged: 'fusionadas sin duplicar',
+};
+
+const summaryLines = computed(() =>
+  Object.entries(summary.value)
+    .filter(([, v]) => Number(v) > 0)
+    .map(([k, v]) => `${v} ${LABELS[k] || k}`)
+);
 
 onMounted(() => checkAuth());
 
