@@ -29,6 +29,9 @@ class TmdbService
 
     /**
      * Busca en TMDB por título (+ año opcional). Devuelve el mejor match o null.
+     * Se usa en-US para matchear (títulos originales estables) y se exige
+     * un score mínimo: el primer resultado crudo suele ser basura
+     * (ej. "More Animated Worker and Parasite" para "Parasite").
      */
     public function search(string $title, ?int $year = null): ?array
     {
@@ -40,7 +43,7 @@ class TmdbService
             'api_key' => $this->apiKey,
             'query' => $title,
             'year' => $year,
-            'language' => 'es-MX',
+            'language' => 'en-US',
             'include_adult' => false,
         ]);
 
@@ -48,19 +51,60 @@ class TmdbService
             return null;
         }
 
-        $results = $response->json('results', []);
+        return $this->pickBest($response->json('results', []), $title, $year);
+    }
 
-        return $results[0] ?? null;
+    protected function norm(string $s): string
+    {
+        $s = mb_strtolower($s);
+        $s = (string) @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $s);
+        return (string) preg_replace('/[^a-z0-9]+/', ' ', $s);
+    }
+
+    protected function pickBest(array $results, string $title, ?int $year): ?array
+    {
+        $want = trim($this->norm($title));
+        $best = null;
+        $bestScore = -1;
+
+        foreach ($results as $r) {
+            $score = 0;
+            $t = trim($this->norm((string) ($r['title'] ?? '')));
+            $o = trim($this->norm((string) ($r['original_title'] ?? '')));
+
+            if ($want !== '' && ($t === $want || $o === $want)) {
+                $score += 10;
+            } elseif ($want !== '' && ($t !== '' && (str_contains($t, $want) || str_contains($want, $t)))) {
+                $score += 4;
+            }
+
+            $ry = !empty($r['release_date']) ? (int) substr($r['release_date'], 0, 4) : null;
+            if ($year && $ry === $year) {
+                $score += 5;
+            } elseif ($year && $ry) {
+                $score -= 3;
+            }
+
+            $score += min((float) ($r['popularity'] ?? 0) / 20, 2);
+
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $best = $r;
+            }
+        }
+
+        return $bestScore >= 8 ? $best : null;
     }
 
     /**
      * Rellena los huecos de una película (poster, overview, géneros,
-     * tmdb_id, fecha). Devuelve true si cambió algo.
+     * tmdb_id, fecha). Con $force también corrige datos TMDB previos
+     * (nunca toca tmdb_id existente, vibras ni vectores).
      *
      * @return bool|string true/false, o 'merged:{id}' si el stub se fusionó
      *   con una fila canónica (el stub queda eliminado: usar el id devuelto)
      */
-    public function enrich(Movie $movie): bool|string
+    public function enrich(Movie $movie, bool $force = false): bool|string
     {
         $match = $this->search($movie->title, $movie->release_year ?? $this->yearFromDate($movie->release_date));
 
@@ -75,49 +119,50 @@ class TmdbService
             $patch['tmdb_id'] = (int) $match['id'];
             $changed = true;
         }
-        if (empty($movie->poster_path) && !empty($match['poster_path'])) {
+        if (($force || empty($movie->poster_path)) && !empty($match['poster_path'])) {
             $patch['poster_path'] = $this->imageBase . $match['poster_path'];
             $changed = true;
         }
-        if (empty($movie->overview) && !empty($match['overview'])) {
+        if (($force || empty($movie->overview)) && !empty($match['overview'])) {
             $patch['overview'] = $match['overview'];
             $changed = true;
         }
-        if (empty($movie->release_date) && !empty($match['release_date'])) {
+        if (($force || empty($movie->release_date)) && !empty($match['release_date'])) {
             $patch['release_date'] = $match['release_date'];
             $changed = true;
         }
-        if (empty($movie->genres) && !empty($match['genre_ids'])) {
+        if (($force || empty($movie->genres)) && !empty($match['genre_ids'])) {
             $patch['genres'] = implode(',', $match['genre_ids']);
             $changed = true;
         }
 
-        if ($changed) {
-            // Si el tmdb_id ya existe en el catálogo ML, fusionamos:
-            // el stub desaparece y el historial apunta a la fila canónica.
-            if (!empty($patch['tmdb_id'])) {
-                $canonical = Movie::where('tmdb_id', $patch['tmdb_id'])->where('id', '!=', $movie->id)->first();
-                if ($canonical) {
-                    $canonical->fill($patch);
-                    // Nunca pisamos vectores/vibras del catálogo con nulos del stub
-                    foreach (['vibe_id', 'x_coordinate', 'y_coordinate', 'embedding'] as $mlField) {
-                        if (empty($canonical->getAttribute($mlField)) && !empty($movie->getAttribute($mlField))) {
-                            $canonical->setAttribute($mlField, $movie->getAttribute($mlField));
-                        }
-                    }
-                    if ($canonical->isDirty()) {
-                        $canonical->save();
-                    }
-                    // El historial del stub (reseñas, items de listas) pasa a la fila canónica
-                    \App\Models\Review::where('movie_id', $movie->id)->update(['movie_id' => $canonical->id]);
-                    \App\Models\MovieListItem::where('movie_id', $movie->id)->update(['movie_id' => $canonical->id]);
-                    $movie->delete();
-
-                    return 'merged:' . $canonical->id;
-                }
-            }
-            $movie->update($patch);
+        if (!$changed) {
+            return false;
         }
+
+        if (!empty($patch['tmdb_id'])) {
+            $canonical = Movie::where('tmdb_id', $patch['tmdb_id'])->where('id', '!=', $movie->id)->first();
+            if ($canonical) {
+                $canonical->fill($patch);
+                // Nunca pisamos vectores/vibras del catálogo con nulos del stub
+                foreach (['vibe_id', 'x_coordinate', 'y_coordinate', 'embedding'] as $mlField) {
+                    if (empty($canonical->getAttribute($mlField)) && !empty($movie->getAttribute($mlField))) {
+                        $canonical->setAttribute($mlField, $movie->getAttribute($mlField));
+                    }
+                }
+                if ($canonical->isDirty()) {
+                    $canonical->save();
+                }
+                // El historial del stub (reseñas, items de listas) pasa a la fila canónica
+                \App\Models\Review::where('movie_id', $movie->id)->update(['movie_id' => $canonical->id]);
+                \App\Models\MovieListItem::where('movie_id', $movie->id)->update(['movie_id' => $canonical->id]);
+                $movie->delete();
+
+                return 'merged:' . $canonical->id;
+            }
+        }
+
+        $movie->update($patch);
 
         return $changed;
     }

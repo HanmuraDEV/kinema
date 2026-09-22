@@ -1,16 +1,11 @@
 ---
-import Layout from '../../layouts/Layout.vue';
+// SSR: sin getStaticPaths, cualquier username resuelve dinámicamente.
+// (Con output estático, solo las rutas listadas servían y el resto daba 404.)
+import Layout from '../../layouts/Layout.astro';
 import Card from '../../components/Card.vue';
 import Button from '../../components/Button.vue';
 import AuthGuard from '../../components/AuthGuard.vue';
 import FollowButton from '../../components/FollowButton.vue';
-
-export function getStaticPaths() {
-  return [
-    { params: { username: 'cinelover99' } },
-    { params: { username: 'elenacine' } },
-  ];
-}
 
 const { username } = Astro.params;
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
