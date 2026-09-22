@@ -1,8 +1,9 @@
 ---
-import Layout from '../layouts/Layout.vue';
+import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.vue';
 import Button from '../components/Button.vue';
 import FeedActivity from '../components/FeedActivity.vue';
+import AuthCtas from '../components/AuthCtas.vue';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -92,9 +93,8 @@ if (discoveryMovies.length === 0) {
           <p class="font-body-md text-body-md text-on-surface-variant">
             Tus recomendaciones aparecen cuando calificas películas y sigues a otros cinéfilos.
           </p>
-          <div class="mt-4 flex gap-3">
-            <a href="/search"><Button label="Descubrir" variant="primary" /></a>
-            <a href="/register"><Button label="Crear cuenta" variant="secondary" /></a>
+          <div class="mt-4">
+            <AuthCtas client:load />
           </div>
         </div>
       </section>

@@ -3,12 +3,7 @@ import '../../styles/global.css';
 import Button from '../../components/Button.vue';
 import CommentsSection from '../../components/CommentsSection.vue';
 
-export function getStaticPaths() {
-  return [
-    { params: { username: 'cinelover99' } },
-    { params: { username: 'elenacine' } },
-  ];
-}
+// SSR: cualquier username resuelve dinámicamente (ver profile.astro).
 
 const { username } = Astro.params;
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
