@@ -14,7 +14,9 @@ class Review extends Model
         'movie_id',
         'content',
         'rating',
-        'has_spoilers'
+        'has_spoilers',
+        'watched_at',
+        'letterboxd_uri',
     ];
 
     // Una reseña pertenece a un usuario

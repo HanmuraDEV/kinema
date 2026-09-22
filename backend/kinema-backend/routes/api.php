@@ -11,6 +11,7 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ImportController;
 
 // Rutas Públicas (Cualquiera puede verlas)
 Route::post('/register', [AuthController::class, 'register']);
@@ -65,4 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users/{id}/follow', [FollowController::class, 'toggle']);
     Route::get('/users/{id}/follow-status', [FollowController::class, 'status']);
     Route::get('/feed', [FeedController::class, 'index']);
+
+    // Importar ZIP de Letterboxd al historial propio
+    Route::post('/import/letterboxd', [ImportController::class, 'letterboxd']);
 });

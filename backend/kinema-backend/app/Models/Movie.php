@@ -18,6 +18,7 @@ class Movie extends Model
         'genres',
         'poster_path',
         'release_date',
+        'release_year',
         'vibe_id',
         'x_coordinate',
         'y_coordinate',
