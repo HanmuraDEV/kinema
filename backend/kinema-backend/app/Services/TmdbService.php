@@ -56,8 +56,11 @@ class TmdbService
     /**
      * Rellena los huecos de una película (poster, overview, géneros,
      * tmdb_id, fecha). Devuelve true si cambió algo.
+     *
+     * @return bool|string true/false, o 'merged:{id}' si el stub se fusionó
+     *   con una fila canónica (el stub queda eliminado: usar el id devuelto)
      */
-    public function enrich(Movie $movie): bool
+    public function enrich(Movie $movie): bool|string
     {
         $match = $this->search($movie->title, $movie->release_year ?? $this->yearFromDate($movie->release_date));
 

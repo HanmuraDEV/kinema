@@ -2,3 +2,5 @@
 node_modules/
 pnpm-debug.log*
 config
+# Archivos personales (exports de Letterboxd, etc.): jamás se commitean
+temp/
