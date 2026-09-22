@@ -12,10 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->api(prepend: [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-        ]);
-
+        // API 100% por Bearer tokens (AuthController + Sanctum personal tokens).
+        // NO usar EnsureFrontendRequestsAreStateful aquí: convierte las
+        // peticiones del navegador en "stateful" y exige CSRF (419) aunque
+        // el cliente use tokens. Solo tendría sentido con auth por cookies.
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
