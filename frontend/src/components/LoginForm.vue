@@ -13,6 +13,7 @@
         v-model="form.email"
         type="email"
         required
+        autocomplete="email"
         class="px-4 py-2 rounded-full border border-outline bg-surface text-on-surface focus:outline-none focus:border-primary transition-colors"
         placeholder="usuario@ejemplo.com"
       />
@@ -25,6 +26,7 @@
         v-model="form.password"
         type="password"
         required
+        autocomplete="current-password"
         class="px-4 py-2 rounded-full border border-outline bg-surface text-on-surface focus:outline-none focus:border-primary transition-colors"
         placeholder="••••••••"
       />
