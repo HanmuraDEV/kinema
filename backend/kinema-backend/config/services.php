@@ -28,6 +28,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'tmdb' => [
+        'key' => env('TMDB_API_KEY'),
+        'image_base' => env('TMDB_IMAGE_BASE', 'https://image.tmdb.org/t/p/w500'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
