@@ -10,6 +10,11 @@ import ReviewForm from '../components/ReviewForm.vue';
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 const movieId = Astro.url.searchParams.get('id');
 
+// Sin id no hay película que mostrar: al catálogo
+if (!movieId) {
+  return Astro.redirect('/search');
+}
+
 let movie = null;
 let similar = [];
 let reviews = [];
@@ -54,10 +59,10 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
 
 <Layout title={`Kinema - ${m.title ?? 'Película'}`}>
   <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 pb-32">
-    {!movieId && (
+    {!movie && (
       <div class="glass-panel rounded-xl p-6 mb-8">
         <p class="font-body-md text-body-md text-on-surface-variant">
-          Pasa un id real: <code>/movie?id=1</code>. Mostrando vista de ejemplo.
+          No encontramos esa película. <a href="/search" class="text-secondary hover:underline">Volver al catálogo</a>.
         </p>
       </div>
     )}

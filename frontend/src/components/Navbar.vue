@@ -9,26 +9,28 @@
     </div>
 
     <nav class="flex items-center gap-8">
-      <Button class="rounded-md border-b-2 border-primary px-0 pb-1 text-primary" label="Explorar" variant="ghost" />
-      <Button class="rounded-md px-0 text-on-surface-variant hover:text-primary" label="Diario" variant="ghost" />
-      <Button class="rounded-md px-0 text-on-surface-variant hover:text-primary" label="Listas" variant="ghost" />
+      <a href="/search"><Button class="rounded-md border-b-2 border-primary px-0 pb-1 text-primary" label="Explorar" variant="ghost" /></a>
+      <a href="/diary"><Button class="rounded-md px-0 text-on-surface-variant hover:text-primary" label="Diario" variant="ghost" /></a>
+      <a href="/lists"><Button class="rounded-md px-0 text-on-surface-variant hover:text-primary" label="Listas" variant="ghost" /></a>
 
       <!-- Sección de Usuario Autenticado -->
       <template v-if="isAuthenticated">
-        <Button icon="add" label="Log Movie" variant="primary" />
-        
+        <a href="/diary"><Button icon="add" label="Log Movie" variant="primary" /></a>
+
         <div class="flex items-center gap-4">
-          <Button class="p-2 text-secondary hover:text-primary" icon="notifications" variant="ghost" />
-          
-          <!-- Menú flotante del perfil -->
-          <div class="relative group">
-            <div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden cursor-pointer border border-outline-variant/30">
-              <img 
-                :alt="user?.name || 'User profile'" 
-                class="w-full h-full object-cover" 
-                :src="user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random`" 
+          <a :href="profileUrl" title="Mi perfil">
+            <div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden cursor-pointer border border-outline-variant/30 hover:border-secondary transition-colors">
+              <img
+                :alt="user?.name || 'User profile'"
+                class="w-full h-full object-cover"
+                :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random`"
               />
             </div>
+          </a>
+
+          <!-- Menú flotante del perfil -->
+          <div class="relative group">
+            <Button class="p-2 text-secondary hover:text-primary" icon="expand_more" variant="ghost" />
 
             <!-- Menú desplegable al hacer hover -->
             <div class="absolute right-0 mt-2 w-48 bg-surface-container rounded-md shadow-lg border border-outline-variant/30 py-1 hidden group-hover:block transition-all z-50">
@@ -36,8 +38,9 @@
                 <p class="text-body-md font-bold text-on-surface truncate">{{ user?.name }}</p>
                 <p class="text-body-sm text-on-surface-variant truncate">{{ user?.email }}</p>
               </div>
-              <button 
-                @click="logout" 
+              <a :href="profileUrl" class="block px-4 py-2 text-body-sm text-on-surface hover:bg-surface-variant/50 transition-colors">Mi perfil</a>
+              <button
+                @click="logout"
                 class="w-full text-left px-4 py-2 text-body-sm text-error hover:bg-surface-variant/50 transition-colors flex items-center gap-2 cursor-pointer"
               >
                 <span class="material-symbols-outlined text-sm">logout</span>
@@ -59,11 +62,15 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useAuth } from '../composables/useAuth';
 import Button from './Button.vue';
 
 const { user, isAuthenticated, isLoading, checkAuth, logout } = useAuth();
+
+const profileUrl = computed(() =>
+  user.value?.name ? `/${encodeURIComponent(user.value.name)}/profile` : '/login'
+);
 
 onMounted(() => {
   checkAuth();

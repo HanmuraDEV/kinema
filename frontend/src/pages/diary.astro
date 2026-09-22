@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.vue';
+import AuthGuard from '../components/AuthGuard.vue';
+import MyDiary from '../components/MyDiary.vue';
+---
+
+<Layout title="Kinema - Mi Diario">
+  <AuthGuard client:load>
+    <main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 pb-32 md:pb-12">
+      <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 class="font-headline-lg-mobile md:font-headline-xl text-headline-lg-mobile md:text-headline-xl text-primary mb-2">
+            Mi Diario
+          </h1>
+          <p class="font-body-md text-body-md text-on-surface-variant">
+            Todo lo que viste y reseñaste, en orden.
+          </p>
+        </div>
+        <a href="/search" class="font-label-md text-label-md text-secondary hover:underline">+ Registrar película</a>
+      </div>
+      <MyDiary client:load />
+    </main>
+  </AuthGuard>
+</Layout>

@@ -25,6 +25,17 @@ class ReviewController extends Controller
         return response()->json($review);
     }
 
+    // Diario de un usuario: sus reseñas/vistas con película (para /diary)
+    public function byUser($userId)
+    {
+        $reviews = Review::with('movie:id,title,poster_path,release_date,release_year')
+            ->where('user_id', $userId)
+            ->latest()
+            ->paginate(20);
+
+        return response()->json($reviews);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
