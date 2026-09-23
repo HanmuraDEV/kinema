@@ -35,6 +35,12 @@ class Movie extends Model
         return $this->hasMany(Review::class);
     }
 
+    // Créditos (reparto y equipo) de la película
+    public function credits()
+    {
+        return $this->hasMany(Credit::class);
+    }
+
     // Una película pertenece a un cluster/vibra (usado en index/search/show)
     public function vibe()
     {

@@ -3,9 +3,9 @@ import Layout from '../layouts/Layout.astro';
 import MoviePosterPanel from '../components/MoviePosterPanel.vue';
 import MovieCastList from '../components/MovieCastList.vue';
 import MovieRatingStats from '../components/MovieRatingStats.vue';
-import MovieTonePanel from '../components/MovieTonePanel.vue';
 import Card from '../components/Card.vue';
 import ReviewForm from '../components/ReviewForm.vue';
+import MovieActions from '../components/MovieActions.vue';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 const movieId = Astro.url.searchParams.get('id');
@@ -19,6 +19,8 @@ let movie = null;
 let similar = [];
 let reviews = [];
 let sentiment = null;
+let cast = [];
+let directors = [];
 
 if (movieId) {
   try {
@@ -40,6 +42,22 @@ if (movieId) {
     const res = await fetch(`${API_URL}/api/movies/${movieId}/sentiment`);
     if (res.ok) sentiment = await res.json();
   } catch (e) { console.error('sentiment falló:', e); }
+  try {
+    const res = await fetch(`${API_URL}/api/movies/${movieId}/credits`);
+    if (res.ok) {
+      const json = await res.json();
+      cast = (json.cast ?? []).map((c) => ({
+        id: c.person?.id,
+        name: c.person?.name ?? '?',
+        role: c.character || c.job,
+        image: c.person?.profile_path || '',
+      }));
+      directors = (json.directors ?? []).map((d) => ({
+        id: d.person?.id,
+        name: d.person?.name ?? '?',
+      }));
+    }
+  } catch (e) { console.error('credits falló:', e); }
 }
 
 const fallback = {
@@ -77,21 +95,62 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
 
           <div class="flex items-center gap-4 text-on-surface-variant font-label-sm text-label-sm">
             <span>{year}</span>
+            {directors.length > 0 && (
+              <>
+                <span>•</span>
+                <span>Dir. {directors.map((d, i) => (
+                  <span>{i > 0 && ', '}<a href={`/artists/${d.id}/profile`} class="hover:text-secondary hover:underline">{d.name}</a></span>
+                ))}</span>
+              </>
+            )}
             {m.vibe && (<><span>•</span><span class="rounded-full border border-secondary/30 px-3 py-1 text-secondary">{m.vibe.name}</span></>)}
           </div>
         </div>
 
+        <MovieActions client:load movieId={movieId} movieTitle={m.title} />
+
         <div class="pt-6 border-t border-outline-variant/30">
           <h3 class="font-headline-md text-headline-md mb-4 text-secondary">Sinopsis</h3>
-          <p class="font-body-md text-body-md text-on-surface-variant">{m.overview || m.synopsis || 'Sin sinopsis.'}</p>
+          <p class="font-body-md text-body-md text-on-surface-variant">{m.overview || m.synopsis || 'Sin sinopsis todavía.'}</p>
         </div>
 
-        {sentiment && (
-          <div class="glass-panel rounded-xl p-6">
-            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Pulso de la comunidad</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant">
-              Positivas: {sentiment.POSITIVE ?? 0} · Negativas: {sentiment.NEGATIVE ?? 0}
-            </p>
+        {cast.length > 0 && (
+          <MovieCastList cast={cast} />
+        )}
+
+        {(movie?.rating_stats || (sentiment && ((sentiment.POSITIVE ?? 0) + (sentiment.NEGATIVE ?? 0) > 0))) && (
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter pt-6 border-t border-outline-variant/30">
+            {movie?.rating_stats && movie.rating_stats.count > 0 && (
+              <MovieRatingStats
+                ratingBars={movie.rating_stats.bars}
+                average={movie.rating_stats.average}
+                count={movie.rating_stats.count}
+              />
+            )}
+            {sentiment && ((sentiment.POSITIVE ?? 0) + (sentiment.NEGATIVE ?? 0) > 0) && (
+              <div class="glass-panel rounded-xl p-6">
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-4">Pulso de la comunidad</h3>
+                {(() => {
+                  const pos = sentiment.POSITIVE ?? 0;
+                  const neg = sentiment.NEGATIVE ?? 0;
+                  const total = pos + neg;
+                  const posPct = Math.round((pos / total) * 100);
+                  return (
+                    <>
+                      <div class="flex h-4 w-full overflow-hidden rounded-full bg-surface-container-highest">
+                        <div class="h-full bg-primary" style={`width: ${posPct}%`} />
+                        <div class="h-full bg-tertiary" style={`width: ${100 - posPct}%`} />
+                      </div>
+                      <div class="mt-3 flex justify-between font-label-md text-label-md">
+                        <span class="text-primary">▲ {pos} positivas ({posPct}%)</span>
+                        <span class="text-tertiary">▼ {neg} negativas ({100 - posPct}%)</span>
+                      </div>
+                      <p class="mt-2 font-label-sm text-label-sm text-on-surface-variant">Análisis de sentimiento de las reseñas con NLP.</p>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
           </div>
         )}
 

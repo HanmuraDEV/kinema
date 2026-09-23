@@ -39,13 +39,73 @@ class MovieController extends Controller
         return response()->json($movies);
     }
 
-    // 2. Detalle de una sola película
+    // 2. Detalle de una sola película (+ stats reales de la comunidad)
     public function show($id)
     {
         // fail() devuelve automáticamente un error 404 si el ID no existe
         $movie = Movie::with('vibe')->findOrFail($id);
+        $movie->rating_stats = $this->ratingStats((int) $id);
 
         return response()->json($movie);
+    }
+
+    // Distribución de calificaciones 0.5-5.0 para el histograma del frontend
+    protected function ratingStats(int $movieId): array
+    {
+        $buckets = [];
+        for ($i = 1; $i <= 10; $i++) {
+            $buckets[number_format($i * 0.5, 1)] = 0;
+        }
+
+        $ratings = \App\Models\Review::where('movie_id', $movieId)
+            ->whereNotNull('rating')
+            ->pluck('rating');
+
+        foreach ($ratings as $rating) {
+            $key = number_format((float) $rating, 1);
+            if (array_key_exists($key, $buckets)) {
+                $buckets[$key]++;
+            }
+        }
+
+        $max = max($buckets) ?: 1;
+        $bars = [];
+        foreach ($buckets as $label => $count) {
+            $bars[] = [
+                'label' => "{$label} stars",
+                'height' => round($count / $max * 100) . '%',
+                'count' => $count,
+            ];
+        }
+
+        return [
+            'average' => $ratings->count() ? round($ratings->avg(), 1) : null,
+            'count' => $ratings->count(),
+            'bars' => $bars,
+        ];
+    }
+
+    // Reparto principal + dirección (para la ficha de película)
+    public function credits($id)
+    {
+        $movie = Movie::findOrFail($id);
+
+        $cast = $movie->credits()
+            ->with('person:id,name,profile_path')
+            ->where('department', 'Acting')
+            ->orderBy('order')
+            ->take(15)
+            ->get();
+
+        $directors = $movie->credits()
+            ->with('person:id,name,profile_path')
+            ->where('job', 'Director')
+            ->get();
+
+        return response()->json([
+            'cast' => $cast,
+            'directors' => $directors,
+        ]);
     }
 
     // 3. El Motor de Recomendaciones (Magia de pgvector)
