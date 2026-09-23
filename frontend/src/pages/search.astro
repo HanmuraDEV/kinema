@@ -14,13 +14,17 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 const initialQuery = Astro.url.searchParams.get('q') || '';
 
 let initialResults = [];
+let initialLists = [];
+let initialPeople = [];
 const q = initialQuery.trim();
 if (q.length >= 2) {
   try {
-    const res = await fetch(`${API_URL}/api/movies/search?q=${encodeURIComponent(q)}`);
+    const res = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(q)}`);
     if (res.ok) {
       const json = await res.json();
-      initialResults = Array.isArray(json) ? json : [];
+      initialResults = json.movies ?? (Array.isArray(json) ? json : []);
+      initialLists = json.lists ?? [];
+      initialPeople = json.people ?? [];
     }
   } catch (e) {
     console.error('Búsqueda inicial falló:', e);
@@ -42,7 +46,7 @@ if (q.length >= 2) {
   <main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-gutter pb-32 md:pb-12">
     <div class="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-8 lg:items-start">
       <SearchSidebar vibeTags={vibeTags} />
-      <LiveSearch client:load initialResults={initialResults} initialQuery={initialQuery} />
+      <LiveSearch client:load initialResults={initialResults} initialLists={initialLists} initialPeople={initialPeople} initialQuery={initialQuery} />
     </div>
   </main>
 </Layout>

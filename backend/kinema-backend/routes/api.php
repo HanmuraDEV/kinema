@@ -13,6 +13,7 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\SearchController;
 
 // Rutas Públicas (Cualquiera puede verlas)
 Route::post('/register', [AuthController::class, 'register']);
@@ -20,6 +21,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/movies', [MovieController::class, 'index']);
 Route::get('/movies/search', [MovieController::class, 'search']);
+Route::get('/search', [SearchController::class, 'index']);
 Route::get('/movies/{id}', [MovieController::class, 'show']);
 Route::get('/movies/{id}/similar', [MovieController::class, 'similar']);
 Route::get('/movies/{id}/credits', [MovieController::class, 'credits']);
