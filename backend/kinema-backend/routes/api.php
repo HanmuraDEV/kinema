@@ -41,6 +41,10 @@ Route::get('/users/{id}/followers', [FollowController::class, 'followers']);
 Route::get('/users/{id}/following', [FollowController::class, 'following']);
 Route::get('/lists/{id}', [MovieListController::class, 'show']);
 Route::get('/movies/{id}/sentiment', [AnalyticsController::class, 'movieSentiment']);
+Route::get('/analytics/activity', [AnalyticsController::class, 'activity']);
+Route::get('/analytics/taste', [AnalyticsController::class, 'taste']);
+Route::get('/analytics/map', [AnalyticsController::class, 'map']);
+Route::get('/analytics/genres', [AnalyticsController::class, 'genres']);
 
 
 // Rutas Protegidas (El muro de seguridad)
@@ -54,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Reseñas: crear / editar / borrar (solo dueño)
     Route::post('/reviews', [ReviewController::class, 'store']);
+    Route::get('/reviews', [ReviewController::class, 'indexAll']);
     Route::put('/reviews/{id}', [ReviewController::class, 'update']);
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
 
