@@ -43,23 +43,31 @@ class ReviewController extends Controller
             'content' => 'nullable|string|max:2000',
             // Calificación de 0.5 a 5.0, típica de Letterboxd
             'rating' => 'nullable|numeric|min:0.5|max:5.0',
-            'has_spoilers' => 'boolean'
+            'has_spoilers' => 'boolean',
+            'watched_at' => 'nullable|date',
         ]);
 
 // updateOrCreate evita que un usuario deje 5 reseñas distintas a la misma película;
-        // si ya la reseñó, simplemente actualiza su texto y calificación.
+// si ya la reseñó, simplemente actualiza su texto y calificación.
+        $attrs = [
+            // Usamos input() para evitar chocar con la variable protegida interna de Symfony
+            'content' => $request->input('content'),
+            'rating' => $request->input('rating'),
+            // input() permite un segundo parámetro que funciona como valor por defecto
+            'has_spoilers' => $request->input('has_spoilers', false),
+        ];
+        // watched_at solo se toca si viene en la petición (botón "Vista hoy",
+        // import Letterboxd). Así no se pisa con nulos al editar texto/nota.
+        if ($request->filled('watched_at')) {
+            $attrs['watched_at'] = $request->input('watched_at');
+        }
+
         $review = Review::updateOrCreate(
             [
                 'user_id' => $request->user()->id,
                 'movie_id' => $request->input('movie_id'),
             ],
-            [
-                // Usamos input() para evitar chocar con la variable protegida interna de Symfony
-                'content' => $request->input('content'),
-                'rating' => $request->input('rating'),
-                // input() permite un segundo parámetro que funciona como valor por defecto
-                'has_spoilers' => $request->input('has_spoilers', false),
-            ]
+            $attrs
         );
 
         return response()->json([

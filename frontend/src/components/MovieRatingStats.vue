@@ -12,7 +12,8 @@
     </div>
     <div class="flex justify-between text-on-surface-variant font-label-sm text-label-sm mt-2">
       <span>0.5</span>
-      <span class="font-bold text-secondary">4.0 Promedio</span>
+      <span v-if="average !== null && average !== undefined" class="font-bold text-secondary">{{ average }} Promedio · {{ count }} votos</span>
+      <span v-else class="text-on-surface-variant/70">Sin votos aún</span>
       <span>5.0</span>
     </div>
   </div>
@@ -20,6 +21,10 @@
 
 <script>
 export default {
-  props: ['ratingBars'],
+  props: {
+    ratingBars: { type: Array, default: () => [] },
+    average: { type: [Number, String], default: null },
+    count: { type: Number, default: 0 },
+  },
 };
 </script>

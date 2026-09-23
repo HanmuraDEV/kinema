@@ -1,52 +1,25 @@
 <template>
   <div class="md:col-span-4 flex flex-col gap-6">
-    
-    <!-- Contenedor del Póster -->
-    <div class="rounded-xl overflow-hidden ambient-shadow-bondi bg-white">
-      <img 
-        :alt="title" 
-        :src="poster" 
-        class="w-full h-auto object-cover" 
+    <!-- Póster (las acciones viven en MovieActions) -->
+    <div class="rounded-xl overflow-hidden ambient-shadow-bondi bg-surface-container-high flex items-center justify-center text-center font-headline-md text-headline-md text-on-surface-variant p-6 min-h-[300px]">
+      <img
+        v-if="poster"
+        :alt="title"
+        :src="poster"
+        class="w-full h-auto object-cover"
         style="aspect-ratio: 2 / 3;"
       />
-    </div>
-
-    <!-- Contenedor de Acciones -->
-    <div class="flex flex-col gap-4">
-      
-      <!-- 
-        Reutilizamos el Button de Vue.
-        Si en el futuro quieres que abra un modal, solo agregarás @click="abrirModal"
-      -->
-      <Button 
-        class="w-full" 
-        icon="edit" 
-        label="Registrar" 
-        variant="tertiary" 
-      />
-
-      <!-- Botón secundario (Bitácora) -->
-      <Button
-        class="w-full justify-between rounded-lg bg-surface-variant p-4 text-on-surface-variant hover:bg-surface-container-highest"
-        icon="book"
-        iconFilled
-        label="Abrir Bitácora"
-        variant="ghost"
-      />
-
+      <span v-else>{{ title }}</span>
     </div>
   </div>
 </template>
 
 <script setup>
-// Importamos el Button base que migramos en el paso anterior
-import Button from './Button.vue';
-
-// Definimos los props con sus tipos (buena práctica para Vue)
 defineProps({
   poster: {
     type: String,
-    required: true
+    required: false,
+    default: ''
   },
   title: {
     type: String,

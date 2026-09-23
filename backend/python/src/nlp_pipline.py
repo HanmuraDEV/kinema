@@ -1,11 +1,14 @@
+import os
 import requests
 import pandas as pd
 import json
 from happytransformer import HappyTextClassification
 
 # 1. Configuración de la API
-API_URL = "http://localhost/api/reviews" # Asumiendo que crearemos un endpoint general de reseñas
-TOKEN = "2|R30QybCcuA0Ji3jXDVIHurgHnjxRCHlGv3JsaSmocb729476" # Token con permisos para leer todo
+# TODO(Fase D): reescritura pendiente. El token nunca va en código:
+# usar variable de entorno KINEMA_API_TOKEN (token anterior revocado el 2026-09-22).
+API_URL = "http://localhost:8000/api/reviews" # requiere endpoint GET (no existe aún)
+TOKEN = os.environ.get("KINEMA_API_TOKEN", "")
 
 headers = {
     "Accept": "application/json",

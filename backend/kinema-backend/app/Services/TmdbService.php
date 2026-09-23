@@ -179,4 +179,106 @@ class TmdbService
             return null;
         }
     }
+
+    /**
+     * Importa reparto (top 15) + dirección/escritura a people/credits.
+     * Devuelve cantidad de créditos creados.
+     */
+    public function credits(Movie $movie): int
+    {
+        if (!$this->configured() || empty($movie->tmdb_id)) {
+            return 0;
+        }
+
+        $response = Http::timeout(20)->get("https://api.themoviedb.org/3/movie/{$movie->tmdb_id}/credits", [
+            'api_key' => $this->apiKey,
+            'language' => 'en-US',
+        ]);
+
+        if (!$response->successful()) {
+            return 0;
+        }
+
+        $data = $response->json();
+        $count = 0;
+
+        $import = function (array $members, string $defaultDepartment) use ($movie, &$count) {
+            foreach ($members as $index => $m) {
+                if (empty($m['id']) || empty($m['name'])) {
+                    continue;
+                }
+                $department = $m['department'] ?? $defaultDepartment;
+                $person = \App\Models\Person::updateOrCreate(
+                    ['tmdb_id' => (int) $m['id']],
+                    [
+                        'name' => $m['name'],
+                        'profile_path' => !empty($m['profile_path']) ? $this->imageBase . $m['profile_path'] : null,
+                        'known_for_department' => $m['known_for_department'] ?? $department,
+                    ]
+                );
+                $credit = \App\Models\Credit::firstOrCreate(
+                    [
+                        'movie_id' => $movie->id,
+                        'person_id' => $person->id,
+                        'job' => $m['job'] ?? ($department === 'Acting' ? 'Actor' : $department),
+                    ],
+                    [
+                        'department' => $department,
+                        'character' => $m['character'] ?? null,
+                        'order' => $m['order'] ?? $index,
+                    ]
+                );
+                if ($credit->wasRecentlyCreated) {
+                    $count++;
+                }
+            }
+        };
+
+        $import(array_slice($data['cast'] ?? [], 0, 15), 'Acting');
+        // Equipo clave: dirección y escritura (el resto saturaría la tabla)
+        $crew = array_filter(
+            $data['crew'] ?? [],
+            fn ($c) => in_array($c['job'] ?? '', ['Director', 'Writer', 'Screenplay', 'Novel'], true)
+        );
+        $import(array_values($crew), 'Directing');
+
+        return $count;
+    }
+
+    /**
+     * Rellena bio y fechas de una persona bajo demanda. Devuelve true si cambió algo.
+     */
+    public function personDetail(\App\Models\Person $person): bool
+    {
+        if (!$this->configured() || empty($person->tmdb_id)) {
+            return false;
+        }
+
+        $response = Http::timeout(15)->get("https://api.themoviedb.org/3/person/{$person->tmdb_id}", [
+            'api_key' => $this->apiKey,
+            'language' => 'es-MX',
+        ]);
+
+        if (!$response->successful()) {
+            return false;
+        }
+
+        $data = $response->json();
+        $patch = [];
+        foreach (['biography', 'birthday', 'deathday'] as $field) {
+            if (empty($person->{$field}) && !empty($data[$field])) {
+                $patch[$field] = $data[$field];
+            }
+        }
+        if (empty($person->profile_path) && !empty($data['profile_path'])) {
+            $patch['profile_path'] = $this->imageBase . $data['profile_path'];
+        }
+
+        if ($patch) {
+            $person->update($patch);
+            return true;
+        }
+
+        return false;
+    }
 }
