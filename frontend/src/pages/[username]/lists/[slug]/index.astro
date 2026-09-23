@@ -1,148 +1,32 @@
 ---
 import Layout from "../../../../layouts/Layout.astro";
-import Button from "../../../../components/Button.vue";
 import ListDetail from "../../../../components/ListDetail.vue";
-
-// SSR: cualquier combinación username/slug resuelve dinámicamente.
 
 const { username, slug } = Astro.params;
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 
+// SSR: pinta al instante si la lista es pública. Las privadas (o el rol
+// de dueño) se resuelven en el cliente con el token en ListDetail.
 let apiList = null;
 try {
   const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username || '')}/lists/${encodeURIComponent(slug || '')}`);
   if (res.ok) apiList = await res.json();
 } catch (e) {
-  console.error('Lista API falló, usando mock:', e);
+  console.error('Lista API falló, el cliente reintentará con sesión:', e);
 }
-
-// Cada slug es único POR USUARIO: el mismo slug en otro usuario trae otras películas
-const listTitle = apiList?.name ?? 'Películas para llorar en domingo';
-const listDescription = apiList?.description ?? 'Una lista curada para tardes lentas, finales emocionales y una caja de pañuelos cerca de la pantalla.';
-const listOwner = apiList?.user?.name ?? username;
-const listItems = apiList?.items ?? [];
-
-const mockMovies = [
-  {
-    title: "El Diario de Noa",
-    year: "2004",
-    rating: "4.8",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDRwVTdn9sWk160zDlJcouiny65fzLpKjiPCK_j0Y112S97Ey5CEaZXiui_PlDQqcV0RaUJwjzRUNX4eXI8EO9nbjnbS9Rhtxp9MOeWMZs1RxqgbPnlBIEkhHJZA1qUjyFskayncWJggHEK--McTZrUtvGZBw8mYZrZsTBpumLAhxxpt3C_XO-TPlNe65eSiXor-7_Shfu4c9GV5N6zQfPwkDAHTscF9rRevCrtbypWyu52PbgtFjV3e1D-HhmX0XxZ8bhpBuzN1UI",
-  },
-  {
-    title: "Manchester by the Sea",
-    year: "2016",
-    rating: "4.5",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBz2HrF9ADsT8IWAGyTLwjsjBwHc_M03XZ2dE3g2y-C2mUcFui3UeR_RNQwV9TTIL_eIbEL6JTH06v4KxjDLSIzXkFxf-Gsua9KtxoQn-ZYLibSkDayVe_tNKTvwlh08y8Kb4kN6oPwgOotMvbXUWUb-VyqjLmONNhaz9i0F1wKMxcXYRMSabOOJGqgUTYtZGwxUUKO-RwRMXoCJfA9IEKslE-QsX0rf9v10jSjYp9QyOaGXlQkYrRN7gKsHkAzz1AFKS8bAq-bMJw",
-  },
-];
 ---
 
-<Layout title={`Kinema - ${listTitle} de ${username}`}>
+<Layout title={apiList ? `Kinema - ${apiList.name} de ${username}` : `Kinema - Lista de ${username}/${slug}`}>
   <main
     class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 pb-32 md:pb-12"
   >
-    <section class="mb-12 pb-8 border-b border-outline-variant/30">
-      <div
-        class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6"
-      >
-        <div class="flex-1">
-          <div class="flex items-center gap-2 mb-2">
-            <div class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center font-bold text-[12px] text-on-secondary-container">
-              {(listOwner || '?').charAt(0).toUpperCase()}
-            </div>
-            <span class="font-label-md text-label-md text-on-surface-variant">
-              Creado por @{listOwner}
-            </span>
-            {!apiList?.is_public && (
-              <span class="font-label-sm text-label-sm px-3 py-1 rounded-full border border-outline-variant/50 text-on-surface-variant">Privada</span>
-            )}
-          </div>
-
-          <h1 class="font-headline-xl text-headline-xl text-primary mb-4">
-            {listTitle}
-          </h1>
-          <p
-            class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"
-          >
-            {listDescription}
-          </p>
-          {apiList && (
-            <p class="mt-2 font-label-sm text-label-sm text-on-surface-variant">{listItems.length} películas</p>
-          )}
-        </div>
-
-        <div class="flex flex-wrap gap-4">
-          <Button
-            icon="content_copy"
-            label="Copiar lista"
-            variant="secondary"
-          />
-          <Button
-            icon="favorite"
-            iconFilled={true}
-            label="Guardar lista"
-            variant="tertiary"
-          />
-        </div>
-      </div>
-    </section>
-
-    {apiList ? (
-      <ListDetail client:load listId={apiList.id} initialItems={listItems} />
-    ) : (
-    <>
-    <section class="mb-12">
-      <div
-        class="border border-outline-variant rounded-full p-2 flex items-center relative glass-panel"
-      >
-        <span class="material-symbols-outlined text-outline ml-3 absolute">
-          search
-        </span>
-        <input
-          class="w-full bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface pl-10 py-3 rounded-full placeholder-outline-variant"
-          placeholder="Buscar película para añadir..."
-          type="text"
-        />
-        <Button class="ml-2 shrink-0" label="Añadir" variant="primary" />
-      </div>
-    </section>
-
-    <section class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
-      {
-        mockMovies.map((movie) => (
-          <article class="relative group rounded-xl overflow-hidden ambient-shadow-bondi hover:scale-[1.02] transition-transform duration-300">
-            <img
-              alt={movie.title}
-              class="w-full aspect-[2/3] object-cover"
-              src={movie.image}
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-              <h3 class="font-headline-md text-headline-md text-white">
-                {movie.title}
-              </h3>
-              <div class="flex items-center justify-between mt-2">
-                <span class="font-label-sm text-label-sm text-white/80">
-                  {movie.year}
-                </span>
-                <span class="font-label-sm text-label-sm text-tertiary-fixed flex items-center gap-1">
-                  <span
-                    class="material-symbols-outlined text-[16px]"
-                    style="font-variation-settings: 'FILL' 1;"
-                  >
-                    star
-                  </span>
-                  {movie.rating}
-                </span>
-              </div>
-            </div>
-          </article>
-        ))
-      }
-    </section>
-    </>
-    )}
+    <ListDetail
+      client:load
+      listId={apiList?.id ?? null}
+      username={username}
+      slug={slug}
+      initialList={apiList}
+      initialItems={apiList?.items ?? []}
+    />
   </main>
 </Layout>
