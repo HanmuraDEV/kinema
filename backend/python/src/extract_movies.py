@@ -2,9 +2,18 @@ import tmdbsimple as tmdb
 from os import environ
 import pandas as pd
 import time
-import streamlit as st
+try:
+    import streamlit as st
+    _HAS_STREAMLIT = True
+except ImportError:  # CLI sin streamlit (main.py)
+    _HAS_STREAMLIT = False
+    st = None
 from dotenv import load_dotenv
-import plotly.express as px
+try:
+    import plotly.express as px  # solo la UI streamlit; el CLI no lo exige
+except ImportError:
+    px = None
+from typing import Callable, Optional
 
 load_dotenv()
 
@@ -33,11 +42,12 @@ class DataExtractor:
         except:
             return {}
 
-    def fetch_popular_movies(self, pages: int = 5) -> pd.DataFrame:
+    def fetch_popular_movies(self, pages: int = 5,
+                               progress: Optional[Callable[[float], None]] = None) -> pd.DataFrame:
         movies_data = []
         movies_api = tmdb.Movies()
-        progress_bar = st.progress(0)
-        
+        bar = st.progress(0) if (_HAS_STREAMLIT and progress is None) else None
+
         for page in range(1, pages + 1):
             try:
                 popular = movies_api.popular(page=page)
@@ -68,9 +78,13 @@ class DataExtractor:
                 time.sleep(0.2)
             except Exception as e:
                 pass
-            progress_bar.progress(page / pages)
-        
-        progress_bar.empty()
+            if bar is not None:
+                bar.progress(page / pages)
+            elif progress is not None:
+                progress(page / pages)
+
+        if bar is not None:
+            bar.empty()
         df = pd.DataFrame(movies_data)
         return df[df['metadata_text'].str.strip() != ""]
 

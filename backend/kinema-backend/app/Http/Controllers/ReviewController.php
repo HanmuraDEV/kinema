@@ -7,6 +7,19 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    // Todas las reseñas con texto (para el pipeline NLP y moderación).
+    // Protegido: requiere token de servicio o sesión.
+    public function indexAll(Request $request)
+    {
+        $reviews = Review::with(['user:id,name', 'movie:id,title'])
+            ->whereNotNull('content')
+            ->where('content', '!=', '')
+            ->latest()
+            ->paginate($request->integer('per_page', 100));
+
+        return response()->json($reviews);
+    }
+
     // Reseñas de una película (público, paginado)
     public function index(Request $request, $movieId)
     {

@@ -1,0 +1,24 @@
+# Núcleo del pipeline (CLI + Streamlit)
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3
+requests>=2.31
+python-dotenv>=1.0
+
+# TMDB (fase extract)
+tmdbsimple>=1.9
+
+# Google GenAI (vectorización + etiquetado de vibras)
+google-genai>=1.0
+
+# Sentimiento en español (pysentimiento trae transformers; torch se instala aparte).
+# CPU solamente (recomendado): pip install torch --index-url https://download.pytorch.org/whl/cpu
+# y después: pip install -r requirements.txt
+pysentimiento>=0.7.3
+torch
+transformers>=4.40
+
+# Solo para la app interactiva original (streamlit run src/extract_movies.py).
+# El CLI (main.py, sentiment.py) funciona sin streamlit.
+streamlit>=1.32
+plotly>=5.0

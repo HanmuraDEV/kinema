@@ -1,7 +1,38 @@
 import pandas as pd
-import streamlit as st
 import json
 from google import genai
+
+try:
+    import streamlit as st
+    _HAS_STREAMLIT = True
+except ImportError:  # CLI sin streamlit
+    _HAS_STREAMLIT = False
+    st = None
+
+from typing import Callable, Optional
+
+
+class Reporter:
+    """Spinner de streamlit en la app, print simple en CLI."""
+    def __init__(self, message: str, progress: Optional[Callable[[str], None]] = None):
+        self.message = message
+        self.progress = progress
+        self._spinner = None
+
+    def __enter__(self):
+        if self.progress:
+            self.progress(self.message)
+        elif _HAS_STREAMLIT:
+            self._spinner = st.spinner(self.message)
+            self._spinner.__enter__()
+        else:
+            print(self.message)
+        return self
+
+    def __exit__(self, *args):
+        if self._spinner is not None:
+            self._spinner.__exit__(*args)
+        return False
 
 class TaxonomyLabeler:
     def __init__(self, api_key: str):
@@ -11,9 +42,13 @@ class TaxonomyLabeler:
             "models/gemini-flash-latest"
         ]
         
-    def label_clusters(self, df: pd.DataFrame, sample_size: int = 4) -> pd.DataFrame:
+    def label_clusters(self, df: pd.DataFrame, sample_size: int = 4,
+                         progress: Optional[Callable[[str], None]] = None) -> pd.DataFrame:
         unique_clusters = sorted(df['cluster_id'].unique())
-        st.info("🧠 Sintetizando 'vibras' puras a través de las sinopsis...")
+        if progress:
+            progress("Sintetizando 'vibras' a través de las sinopsis...")
+        elif _HAS_STREAMLIT:
+            st.info("🧠 Sintetizando 'vibras' puras a través de las sinopsis...")
         
         # 1. Preparamos el contexto enviando las historias, no los géneros
         context_text = ""
@@ -44,24 +79,26 @@ class TaxonomyLabeler:
         Ejemplo estricto: {{"0": "Caos Urbano", "1": "Odisea Espacial"}}
         """
 
-        with st.spinner("Conectando con la IA para generar etiquetas estéticas (1 sola petición)..."):
+        with Reporter("Conectando con la IA para generar etiquetas (1 sola petición)...", progress):
             for model in self.fallback_models:
                 try:
                     response = self.client.models.generate_content(
                         model=model,
                         contents=prompt,
                     )
-                    
+
                     response_text = response.text.replace('```json', '').replace('```', '').strip()
                     labels_dict = json.loads(response_text)
                     labels_dict = {int(k): v for k, v in labels_dict.items()}
-                    
+
                     df['cluster_name'] = df['cluster_id'].map(labels_dict)
-                    st.success("¡Etiquetado de vibras completado!")
                     return df
                 except Exception as e:
-                    st.toast(f"⚠️ {model} falló al generar JSON. Intentando alternativa...")
+                    msg = f"⚠️ {model} falló al generar JSON. Intentando alternativa... ({e})"
+                    if progress:
+                        progress(msg)
+                    elif _HAS_STREAMLIT:
+                        st.toast(msg)
                     continue
-            
-            st.error("❌ Los modelos fallaron al procesar el JSON. Intenta de nuevo.")
-            st.stop()
+
+            raise RuntimeError("❌ Los modelos fallaron al procesar el JSON.")
