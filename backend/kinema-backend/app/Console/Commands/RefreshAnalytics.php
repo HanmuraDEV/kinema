@@ -6,17 +6,19 @@ use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
 
 /**
- * Uso:
- *   # Token por entorno (recomendado, no queda en historial):
- *   KINEMA_API_TOKEN=xxx php artisan analytics:refresh
+ * Vía principal (venv en el host WSL, contenedor Sail sin dependencias Python):
+ *   cd ~/kinema && KINEMA_API_TOKEN=xxx ~/kinema-venv/bin/python \
+ *     backend/python/src/sentiment.py \
+ *     --out backend/kinema-backend/storage/app/private/kinema_sentiment_data.json \
+ *     --api-url http://localhost:8000
  *
- *   # O explícito:
- *   php artisan analytics:refresh --token=xxx --python=/home/user/kinema-venv/bin/python
+ * Este comando artisan es un atajo para hosts donde PHP y el venv coexisten:
+ *   KINEMA_API_TOKEN=xxx php artisan analytics:refresh --python=~/kinema-venv/bin/python
  *
- * Cron sugerido (usuario, 1 vez al día):
- *   0 4 * * * cd ~/kinema/backend/kinema-backend && ./vendor/bin/sail artisan analytics:refresh >> storage/logs/analytics-refresh.log 2>&1
+ * Cron sugerido (WSL, 1 vez al día, vía directa):
+ *   0 4 * * * cd ~/kinema && KINEMA_API_TOKEN=xxx ~/kinema-venv/bin/python backend/python/src/sentiment.py --out backend/kinema-backend/storage/app/private/kinema_sentiment_data.json --api-url http://localhost:8000 >> /tmp/analytics-refresh.log 2>&1
  *
- * Requiere el venv Python de backend/python (ver requirements.txt):
+ * Setup del venv (una vez):
  *   python3 -m venv ~/kinema-venv && ~/kinema-venv/bin/pip install torch \
  *     --index-url https://download.pytorch.org/whl/cpu && \
  *     ~/kinema-venv/bin/pip install -r backend/python/requirements.txt
