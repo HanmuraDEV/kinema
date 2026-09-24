@@ -54,12 +54,13 @@ const maxShare = computed(() => Math.max(...props.items.map((i) => i.share), 1))
 const dots = computed(() => {
   const raw = props.items.slice(0, 6).map((item, i, arr) => {
     const p = polar(item.share, maxShare.value, i, arr.length);
-    // Etiqueta en anillo exterior fijo (fuera del gráfico), no sobre el punto
-    const lr = 49;
+    // Etiqueta fuera de los círculos: anillo amplio que puede invadir el
+    // padding de la card (overflow visible), nunca sobre el polígono
+    const lr = 56;
     const lx = 50 + lr * Math.cos(p.angle);
     const ly = 50 + lr * Math.sin(p.angle);
     // Anclaje según lado para que el texto nunca se corte en los bordes
-    const anchor = lx > 62 ? 'right' : lx < 38 ? 'left' : 'center';
+    const anchor = Math.cos(p.angle) > 0.33 ? 'right' : Math.cos(p.angle) < -0.33 ? 'left' : 'center';
     return {
       ...p,
       x: +p.x.toFixed(1),
@@ -69,22 +70,19 @@ const dots = computed(() => {
       share: item.share,
       showLabel: true,
       anchor,
-      lx: Math.min(Math.max(lx, 12), 88),
-      ly: Math.min(Math.max(ly, 6), 94),
+      lx, ly,
     };
   });
 
-  // Separa verticalmente etiquetas del mismo lado que chocarían
-  for (const side of ['left', 'right']) {
-    const group = raw.filter((d) => d.anchor === side).sort((a, b) => a.ly - b.ly);
-    const MIN = 13;
-    for (let i = 1; i < group.length; i++) {
-      if (group[i].ly - group[i - 1].ly < MIN) group[i].ly = group[i - 1].ly + MIN;
-    }
-    const overflow = group.length ? group[group.length - 1].ly - 94 : 0;
-    if (overflow > 0) group.forEach((d) => { d.ly -= overflow; });
-    group.forEach((d) => { d.ly = Math.min(Math.max(d.ly, 6), 94); });
+  // Separa verticalmente TODAS las etiquetas que choquen, sin importar el lado
+  const ordered = [...raw].sort((a, b) => a.ly - b.ly);
+  const MIN = 10;
+  for (let i = 1; i < ordered.length; i++) {
+    if (ordered[i].ly - ordered[i - 1].ly < MIN) ordered[i].ly = ordered[i - 1].ly + MIN;
   }
+  const overflow = ordered.length ? ordered[ordered.length - 1].ly - 102 : 0;
+  if (overflow > 0) ordered.forEach((d) => { d.ly -= overflow; });
+  ordered.forEach((d) => { d.ly = Math.min(Math.max(d.ly, -2), 102); });
 
   return raw.map((d) => ({
     x: d.x,
@@ -94,7 +92,7 @@ const dots = computed(() => {
     share: d.share,
     showLabel: true,
     labelStyle: {
-      left: `${d.lx}%`,
+      left: `${Math.min(Math.max(d.lx, -10), 110)}%`,
       top: `${d.ly}%`,
       transform: d.anchor === 'right'
         ? 'translate(-100%, -50%)'
@@ -104,7 +102,7 @@ const dots = computed(() => {
       textAlign: d.anchor,
       fontSize: '10px',
       lineHeight: '1.2',
-      maxWidth: '84px',
+      maxWidth: '88px',
       whiteSpace: 'normal',
     },
   }));
