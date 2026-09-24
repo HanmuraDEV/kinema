@@ -23,6 +23,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/movies', [MovieController::class, 'index']);
 Route::get('/movies/search', [MovieController::class, 'search']);
 Route::get('/search', [SearchController::class, 'index']);
+Route::get('/vibes', [SearchController::class, 'vibes']);
 Route::get('/recommendations', [RecommendationController::class, 'index']);
 Route::get('/movies/{id}', [MovieController::class, 'show']);
 Route::get('/movies/{id}/similar', [MovieController::class, 'similar']);
