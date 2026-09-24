@@ -126,6 +126,10 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
 
         {movieId && <MovieRating client:load movieId={movieId} />}
 
+        {cast.length > 0 && (
+          <MovieCastList cast={cast} />
+        )}
+
         {(m.vibe_neighborhood?.length > 0 || (m.budget > 0 && m.revenue > 0)) && (
           <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
             {m.vibe_neighborhood?.length > 0 && (
@@ -176,10 +180,6 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
               </div>
             )}
           </div>
-        )}
-
-        {cast.length > 0 && (
-          <MovieCastList cast={cast} />
         )}
 
         {(movie?.rating_stats || (sentiment && ((sentiment.POSITIVE ?? 0) + (sentiment.NEGATIVE ?? 0) > 0))) && (

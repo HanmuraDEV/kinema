@@ -4,7 +4,7 @@
     <p v-else-if="items.length === 0" class="font-body-md text-body-md text-on-surface-variant text-center px-6">
       Sin reseñas todavía.
     </p>
-    <div v-else class="relative mt-8 h-48 w-48">
+    <div v-else class="relative mt-8 h-60 w-60">
       <div class="absolute inset-0 rounded-full border border-outline-variant/30"></div>
       <div class="absolute inset-4 rounded-full border border-outline-variant/30"></div>
       <div class="absolute inset-8 rounded-full border border-outline-variant/30"></div>
@@ -52,8 +52,8 @@ const polar = (share, maxShare, index, total) => {
 
 const maxShare = computed(() => Math.max(...items.value.map((i) => i.share), 1));
 
-const dots = computed(() =>
-  items.value.slice(0, 6).map((item, i, arr) => {
+const dots = computed(() => {
+  const raw = items.value.slice(0, 6).map((item, i, arr) => {
     const p = polar(item.share, maxShare.value, i, arr.length);
     // Etiqueta en anillo exterior fijo (fuera del gráfico), no sobre el punto
     const lr = 49;
@@ -66,23 +66,44 @@ const dots = computed(() =>
       x: +p.x.toFixed(1),
       y: +p.y.toFixed(1),
       label: item.name,
-      labelStyle: {
-        left: `${Math.min(Math.max(lx, 12), 88)}%`,
-        top: `${Math.min(Math.max(ly, 6), 94)}%`,
-        transform: anchor === 'right'
-          ? 'translate(-100%, -50%)'
-          : anchor === 'left'
-            ? 'translate(0, -50%)'
-            : 'translate(-50%, -50%)',
-        textAlign: anchor,
-        fontSize: '9px',
-        lineHeight: '1.15',
-        maxWidth: '72px',
-        whiteSpace: 'normal',
-      },
+      anchor,
+      lx: Math.min(Math.max(lx, 12), 88),
+      ly: Math.min(Math.max(ly, 6), 94),
     };
-  })
-);
+  });
+
+  // Separa verticalmente etiquetas del mismo lado que chocarían
+  for (const side of ['left', 'right']) {
+    const group = raw.filter((d) => d.anchor === side).sort((a, b) => a.ly - b.ly);
+    const MIN = 13;
+    for (let i = 1; i < group.length; i++) {
+      if (group[i].ly - group[i - 1].ly < MIN) group[i].ly = group[i - 1].ly + MIN;
+    }
+    const overflow = group.length ? group[group.length - 1].ly - 94 : 0;
+    if (overflow > 0) group.forEach((d) => { d.ly -= overflow; });
+    group.forEach((d) => { d.ly = Math.min(Math.max(d.ly, 6), 94); });
+  }
+
+  return raw.map((d) => ({
+    x: d.x,
+    y: d.y,
+    label: d.label,
+    labelStyle: {
+      left: `${d.lx}%`,
+      top: `${d.ly}%`,
+      transform: d.anchor === 'right'
+        ? 'translate(-100%, -50%)'
+        : d.anchor === 'left'
+          ? 'translate(0, -50%)'
+          : 'translate(-50%, -50%)',
+      textAlign: d.anchor,
+      fontSize: '10px',
+      lineHeight: '1.2',
+      maxWidth: '84px',
+      whiteSpace: 'normal',
+    },
+  }));
+});
 
 const points = computed(() => dots.value.map((p) => `${p.x},${p.y}`).join(' '));
 
