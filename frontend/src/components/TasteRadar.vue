@@ -57,15 +57,22 @@ const dots = computed(() =>
     const p = polar(item.share, maxShare.value, i, arr.length);
     const lx = 50 + 48 * Math.cos(p.angle);
     const ly = 50 + 48 * Math.sin(p.angle);
+    // Anclaje según lado para que el texto nunca se corte en los bordes
+    const anchor = lx > 62 ? 'right' : lx < 38 ? 'left' : 'center';
     return {
       ...p,
       x: +p.x.toFixed(1),
       y: +p.y.toFixed(1),
       label: item.name.split(' ').slice(0, 2).join(' '),
       labelStyle: {
-        left: `${lx}%`,
-        top: `${ly}%`,
-        transform: 'translate(-50%, -50%)',
+        left: `${Math.min(Math.max(lx, 16), 84)}%`,
+        top: `${Math.min(Math.max(ly, 8), 92)}%`,
+        transform: anchor === 'right'
+          ? 'translate(-100%, -50%)'
+          : anchor === 'left'
+            ? 'translate(0, -50%)'
+            : 'translate(-50%, -50%)',
+        textAlign: anchor === 'center' ? 'center' : anchor,
       },
     };
   })

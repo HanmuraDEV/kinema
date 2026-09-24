@@ -57,8 +57,8 @@ const dots = computed(() =>
     const lx = 50 + 48 * Math.cos(p.angle);
     const ly = 50 + 48 * Math.sin(p.angle);
     const short = item.name.split(' ').slice(0, 2).join(' ');
-    // Solo etiquetas laterales: las superiores/inferiores se cortan o chocan
-    const isSide = Math.abs(Math.cos(p.angle)) > 0.5;
+    // Anclaje según lado para que el texto nunca se corte en los bordes
+    const anchor = lx > 62 ? 'right' : lx < 38 ? 'left' : 'center';
     return {
       ...p,
       x: +p.x.toFixed(1),
@@ -66,8 +66,17 @@ const dots = computed(() =>
       label: short,
       full: item.name,
       share: item.share,
-      showLabel: isSide,
-      labelStyle: { left: `${lx}%`, top: `${ly}%`, transform: 'translate(-50%, -50%)' },
+      showLabel: true,
+      labelStyle: {
+        left: `${Math.min(Math.max(lx, 16), 84)}%`,
+        top: `${Math.min(Math.max(ly, 8), 92)}%`,
+        transform: anchor === 'right'
+          ? 'translate(-100%, -50%)'
+          : anchor === 'left'
+            ? 'translate(0, -50%)'
+            : 'translate(-50%, -50%)',
+        textAlign: anchor === 'center' ? 'center' : anchor,
+      },
     };
   })
 );
