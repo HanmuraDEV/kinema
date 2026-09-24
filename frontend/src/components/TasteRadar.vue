@@ -65,7 +65,7 @@ const dots = computed(() =>
       ...p,
       x: +p.x.toFixed(1),
       y: +p.y.toFixed(1),
-      label: item.name.split(' ').slice(0, 2).join(' '),
+      label: item.name,
       labelStyle: {
         left: `${Math.min(Math.max(lx, 12), 88)}%`,
         top: `${Math.min(Math.max(ly, 6), 94)}%`,
@@ -74,8 +74,11 @@ const dots = computed(() =>
           : anchor === 'left'
             ? 'translate(0, -50%)'
             : 'translate(-50%, -50%)',
-        textAlign: anchor === 'center' ? 'center' : anchor,
-        fontSize: '10px',
+        textAlign: anchor,
+        fontSize: '9px',
+        lineHeight: '1.15',
+        maxWidth: '72px',
+        whiteSpace: 'normal',
       },
     };
   })
