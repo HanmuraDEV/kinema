@@ -23,7 +23,7 @@
           :style="p.labelStyle"
         >{{ p.label }}</span>
       </div>
-      <div class="mt-8 space-y-2 w-full max-w-[240px]">
+      <div v-if="showLegend" class="mt-8 space-y-2 w-full max-w-[240px]">
         <div v-for="item in items.slice(0, 6)" :key="item.name" class="flex items-center justify-between font-label-sm text-label-sm">
           <span class="text-on-surface">{{ item.name }}</span>
           <span class="text-outline">{{ item.share }}%</span>
@@ -39,6 +39,7 @@ import { computed } from 'vue';
 const props = defineProps({
   items: { type: Array, default: () => [] }, // [{name, share}]
   title: { type: String, default: 'Distribución de géneros' },
+  showLegend: { type: Boolean, default: true },
 });
 
 const polar = (share, maxShare, index, total) => {
