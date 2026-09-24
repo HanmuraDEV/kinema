@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col items-center">
-    <h3 class="font-headline-md text-headline-md mb-2 text-secondary">{{ title }}</h3>
+    <h3 v-if="showTitle" class="font-headline-md text-headline-md mb-2 text-secondary">{{ title }}</h3>
     <div v-if="items.length === 0" class="font-body-md text-body-md text-on-surface-variant py-8">
       Sin datos de géneros.
     </div>
@@ -17,7 +17,7 @@
           </circle>
         </svg>
         <span
-          v-for="p in dots"
+          v-for="p in dots.filter((d) => d.showLabel)"
           :key="'l-' + p.label"
           class="absolute font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap"
           :style="p.labelStyle"
@@ -39,6 +39,7 @@ import { computed } from 'vue';
 const props = defineProps({
   items: { type: Array, default: () => [] }, // [{name, share}]
   title: { type: String, default: 'Distribución de géneros' },
+  showTitle: { type: Boolean, default: true },
   showLegend: { type: Boolean, default: true },
 });
 
@@ -56,6 +57,8 @@ const dots = computed(() =>
     const lx = 50 + 48 * Math.cos(p.angle);
     const ly = 50 + 48 * Math.sin(p.angle);
     const short = item.name.split(' ').slice(0, 2).join(' ');
+    // Solo etiquetas laterales: las superiores/inferiores se cortan o chocan
+    const isSide = Math.abs(Math.cos(p.angle)) > 0.5;
     return {
       ...p,
       x: +p.x.toFixed(1),
@@ -63,6 +66,7 @@ const dots = computed(() =>
       label: short,
       full: item.name,
       share: item.share,
+      showLabel: isSide,
       labelStyle: { left: `${lx}%`, top: `${ly}%`, transform: 'translate(-50%, -50%)' },
     };
   })
