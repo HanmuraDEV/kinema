@@ -140,8 +140,11 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
           <MovieCastList cast={cast} />
         )}
 
-        {(m.vibe_neighborhood?.length > 0 || (m.budget > 0 && m.revenue > 0)) && (
-          <div class="grid grid-cols-1 gap-gutter">
+      </div>
+    </div>
+
+    {(m.vibe_neighborhood?.length > 0 || (m.budget > 0 && m.revenue > 0)) && (
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
             {m.vibe_neighborhood?.length > 0 && (
           <div class="rounded-[24px] border border-outline-variant/20 bg-surface/60 p-6">
             <GenreRadar title="Vibras cercanas" items={m.vibe_neighborhood} showTitle={false} showLegend={false} />
@@ -220,9 +223,6 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
             )}
           </div>
         )}
-
-      </div>
-    </div>
 
     <section class="mt-12 border-t border-outline-variant/30 pt-8">
       <div class="mb-6">
