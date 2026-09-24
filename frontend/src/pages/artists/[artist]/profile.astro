@@ -2,6 +2,8 @@
 import Layout from '../../../layouts/Layout.astro';
 import Button from '../../../components/Button.vue';
 import Card from '../../../components/Card.vue';
+import GenreRadar from '../../../components/GenreRadar.vue';
+import RatingsLine from '../../../components/RatingsLine.vue';
 
 // SSR: el parámetro es el id numérico de la persona (/api/people/{id}).
 const { artist } = Astro.params;
@@ -9,19 +11,35 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 
 let apiPerson = null;
 let filmography = [];
+let genreBreakdown = [];
+let ratingsPoints = [];
 if (artist && /^\d+$/.test(artist)) {
   try {
     const res = await fetch(`${API_URL}/api/people/${artist}`);
     if (res.ok) {
       const json = await res.json();
       apiPerson = json.person;
-      filmography = (json.filmography ?? []).map((c) => ({
-        id: c.movie?.id,
-        title: c.movie?.title ?? '?',
-        year: (c.movie?.release_date || '').slice(0, 4) || c.movie?.release_year || '',
-        credit: [c.job, c.character].filter(Boolean).join(' como '),
-        image: c.movie?.poster_path || '',
-      }));
+      genreBreakdown = json.genre_breakdown ?? [];
+      // Deduplicar por película (Director + Guionista duplican) y ordenar cronológico
+      const seen = new Map();
+      for (const c of json.filmography ?? []) {
+        if (!c.movie || seen.has(c.movie.id)) continue;
+        const year = (c.movie.release_date || '').slice(0, 4) || String(c.movie.release_year || '');
+        seen.set(c.movie.id, {
+          id: c.movie.id,
+          title: c.movie.title,
+          year,
+          sortKey: c.movie.release_date || `${c.movie.release_year || '9999'}-01-01`,
+          credit: [c.job, c.character].filter(Boolean).join(' como '),
+          image: c.movie.poster_path || '',
+          avg: c.movie.kinema_avg !== null && c.movie.kinema_avg !== undefined
+            ? Math.round(Number(c.movie.kinema_avg) * 10) / 10
+            : null,
+        });
+      }
+      const films = [...seen.values()].sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+      filmography = films;
+      ratingsPoints = films.map((f) => ({ title: f.title, year: f.year, avg: f.avg }));
     }
   } catch (e) { console.error('person show falló:', e); }
 }
@@ -79,41 +97,17 @@ const profile = {
       </div>
     </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
-      {profile.careerClusters.length > 0 && (
-        <section class="md:col-span-4 py-6 border-b md:border-b-0 md:border-r border-outline-variant/30 md:pr-8">
-        <h2 class="font-headline-md text-headline-md mb-6 flex items-center gap-2 text-on-background">
-          <span class="material-symbols-outlined text-primary">pie_chart</span>
-          Clusters de Carrera
-        </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-12">
+      <div class="rounded-[24px] border border-outline-variant/20 bg-surface/60 p-6">
+        <GenreRadar items={genreBreakdown} />
+      </div>
+      <div class="rounded-[24px] border border-outline-variant/20 bg-surface/60 p-6">
+        <RatingsLine points={ratingsPoints} />
+      </div>
+    </div>
 
-        <div class="relative w-48 h-48 mx-auto flex items-center justify-center">
-          <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-            <circle class="text-surface-container-highest" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="20"></circle>
-            <circle class="text-primary transition-all duration-1000 ease-out" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="50.24" stroke-width="20"></circle>
-            <circle class="text-secondary transition-all duration-1000 ease-out delay-300" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="213.52" stroke-width="20"></circle>
-          </svg>
-          <div class="absolute inset-0 flex flex-col items-center justify-center">
-            <span class="font-headline-md text-headline-md font-bold text-primary">80%</span>
-            <span class="font-label-sm text-label-sm text-on-surface-variant text-center leading-tight">Sci-Fi<br />Complejo</span>
-          </div>
-        </div>
-
-        <div class="mt-8 space-y-3">
-          {profile.careerClusters.map((item) => (
-            <div class="flex items-center justify-between font-label-md text-label-md border-b border-outline-variant/20 pb-2">
-              <div class="flex items-center gap-2">
-                <span class={`w-3 h-3 rounded-full ${item.color}`}></span>
-                <span>{item.label}</span>
-              </div>
-              <span class="text-on-surface-variant">{item.value}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-      )}
-
-      <section class={`${profile.careerClusters.length > 0 ? 'md:col-span-8' : 'md:col-span-12'} bg-surface/50 rounded p-6 shadow-[0_15px_30px_-5px_rgba(0,106,104,0.05)] border border-white/40 backdrop-blur-md`}>
+    <div class="grid grid-cols-1 gap-gutter">
+      <section class="bg-surface/50 rounded p-6 shadow-[0_15px_30px_-5px_rgba(0,106,104,0.05)] border border-white/40 backdrop-blur-md">
         <div class="flex items-center justify-between mb-6">
           <h2 class="font-headline-md text-headline-md flex items-center gap-2 text-on-background">
             <span class="material-symbols-outlined text-secondary">movie</span>

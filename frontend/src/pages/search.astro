@@ -3,23 +3,32 @@ import Layout from '../layouts/Layout.astro';
 import SearchSidebar from '../components/SearchSidebar.vue';
 import LiveSearch from '../components/LiveSearch.vue';
 
-const vibeTags = [
-  'Tensión constante',
-  'Estética Neón',
-  'Melancolía de domingo',
-  'Viaje en el tiempo',
-];
-
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
-const initialQuery = Astro.url.searchParams.get('q') || '';
+
+const sp = Astro.url.searchParams;
+const current = {
+  q: sp.get('q') || '',
+  vibe: sp.get('vibe') || '',
+  year_from: sp.get('year_from') || '',
+  year_to: sp.get('year_to') || '',
+  genre: sp.get('genre') || '',
+  person: sp.get('person') || '',
+};
+
+const apiParams = new URLSearchParams();
+for (const [k, v] of Object.entries(current)) {
+  if (v.trim() !== '') apiParams.set(k, v.trim());
+}
 
 let initialResults = [];
 let initialLists = [];
 let initialPeople = [];
-const q = initialQuery.trim();
-if (q.length >= 2) {
+let vibeTags = [];
+let genres = [];
+
+if ([...apiParams].length > 0) {
   try {
-    const res = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(q)}`);
+    const res = await fetch(`${API_URL}/api/search?${apiParams.toString()}`);
     if (res.ok) {
       const json = await res.json();
       initialResults = json.movies ?? (Array.isArray(json) ? json : []);
@@ -40,13 +49,27 @@ if (q.length >= 2) {
     console.error('Catálogo inicial falló:', e);
   }
 }
+
+try {
+  const res = await fetch(`${API_URL}/api/vibes`);
+  if (res.ok) vibeTags = await res.json();
+} catch (e) {
+  console.error('Vibras fallaron:', e);
+}
+
+try {
+  const res = await fetch(`${API_URL}/api/analytics/genres`);
+  if (res.ok) genres = (await res.json()).slice(0, 8);
+} catch (e) {
+  console.error('Géneros fallaron:', e);
+}
 ---
 
 <Layout title="Kinema - Buscar y Descubrir">
   <main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-gutter pb-32 md:pb-12">
     <div class="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-8 lg:items-start">
-      <SearchSidebar vibeTags={vibeTags} />
-      <LiveSearch initialResults={initialResults} initialLists={initialLists} initialPeople={initialPeople} initialQuery={initialQuery} />
+      <SearchSidebar vibeTags={vibeTags} genres={genres} current={current} />
+      <LiveSearch initialResults={initialResults} initialLists={initialLists} initialPeople={initialPeople} initialQuery={current.q} />
     </div>
   </main>
 </Layout>
