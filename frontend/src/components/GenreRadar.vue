@@ -54,8 +54,10 @@ const maxShare = computed(() => Math.max(...props.items.map((i) => i.share), 1))
 const dots = computed(() =>
   props.items.slice(0, 6).map((item, i, arr) => {
     const p = polar(item.share, maxShare.value, i, arr.length);
-    const lx = 50 + 48 * Math.cos(p.angle);
-    const ly = 50 + 48 * Math.sin(p.angle);
+    // Etiqueta en anillo exterior fijo (fuera del gráfico), no sobre el punto
+    const lr = 49;
+    const lx = 50 + lr * Math.cos(p.angle);
+    const ly = 50 + lr * Math.sin(p.angle);
     const short = item.name.split(' ').slice(0, 2).join(' ');
     // Anclaje según lado para que el texto nunca se corte en los bordes
     const anchor = lx > 62 ? 'right' : lx < 38 ? 'left' : 'center';
@@ -68,14 +70,15 @@ const dots = computed(() =>
       share: item.share,
       showLabel: true,
       labelStyle: {
-        left: `${Math.min(Math.max(lx, 16), 84)}%`,
-        top: `${Math.min(Math.max(ly, 8), 92)}%`,
+        left: `${Math.min(Math.max(lx, 12), 88)}%`,
+        top: `${Math.min(Math.max(ly, 6), 94)}%`,
         transform: anchor === 'right'
           ? 'translate(-100%, -50%)'
           : anchor === 'left'
             ? 'translate(0, -50%)'
             : 'translate(-50%, -50%)',
         textAlign: anchor === 'center' ? 'center' : anchor,
+        fontSize: '10px',
       },
     };
   })
