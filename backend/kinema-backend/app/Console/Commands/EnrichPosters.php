@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 class EnrichPosters extends Command
 {
     // Límite por defecto bajo: TMDB permite ~40 req/10s
-    protected $signature = 'app:enrich-posters {--limit=50 : Máximo de películas a procesar} {--only-missing : Solo las que no tienen poster} {--force : Reescribe poster/sinopsis/fecha con el mejor match (repara datos mal matcheados)} {--ids= : Solo estos IDs, separados por coma}';
+    protected $signature = 'app:enrich-posters {--limit=50 : Máximo de películas a procesar} {--only-missing : Solo las que no tienen poster} {--only-missing-boxoffice : Solo las que no tienen budget/revenue} {--force : Reescribe poster/sinopsis/fecha con el mejor match (repara datos mal matcheados)} {--ids= : Solo estos IDs, separados por coma}';
     protected $description = 'Rellena poster, sinopsis y tmdb_id desde TMDB (arregla el home sin imágenes)';
 
     public function handle(TmdbService $tmdb)
@@ -22,6 +22,8 @@ class EnrichPosters extends Command
         $query = Movie::query()->orderBy('id');
         if ($ids = $this->option('ids')) {
             $query->whereIn('id', array_map('intval', explode(',', $ids)));
+        } elseif ($this->option('only-missing-boxoffice')) {
+            $query->whereNotNull('tmdb_id')->whereNull('revenue');
         } elseif ($this->option('only-missing')) {
             $query->whereNull('poster_path');
         }
