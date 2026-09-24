@@ -19,7 +19,7 @@
         <span
           v-for="p in dots"
           :key="'l-' + p.label"
-          class="absolute font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap"
+          class="absolute font-label-sm text-label-sm text-on-surface-variant"
           :style="p.labelStyle"
         >{{ p.label }}</span>
       </div>
@@ -58,14 +58,13 @@ const dots = computed(() =>
     const lr = 49;
     const lx = 50 + lr * Math.cos(p.angle);
     const ly = 50 + lr * Math.sin(p.angle);
-    const short = item.name.split(' ').slice(0, 2).join(' ');
     // Anclaje según lado para que el texto nunca se corte en los bordes
     const anchor = lx > 62 ? 'right' : lx < 38 ? 'left' : 'center';
     return {
       ...p,
       x: +p.x.toFixed(1),
       y: +p.y.toFixed(1),
-      label: short,
+      label: item.name,
       full: item.name,
       share: item.share,
       showLabel: true,
@@ -77,8 +76,11 @@ const dots = computed(() =>
           : anchor === 'left'
             ? 'translate(0, -50%)'
             : 'translate(-50%, -50%)',
-        textAlign: anchor === 'center' ? 'center' : anchor,
-        fontSize: '10px',
+        textAlign: anchor,
+        fontSize: '9px',
+        lineHeight: '1.15',
+        maxWidth: '72px',
+        whiteSpace: 'normal',
       },
     };
   })
