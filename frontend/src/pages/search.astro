@@ -2,7 +2,6 @@
 import Layout from '../layouts/Layout.astro';
 import SearchSidebar from '../components/SearchSidebar.vue';
 import LiveSearch from '../components/LiveSearch.vue';
-import GenreBreakdown from '../components/GenreBreakdown.vue';
 
 const vibeTags = [
   'Tensión constante',
@@ -45,11 +44,9 @@ if (q.length >= 2) {
 
 <Layout title="Kinema - Buscar y Descubrir">
   <main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-gutter pb-32 md:pb-12">
-    <GenreBreakdown client:load />
-
     <div class="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-8 lg:items-start">
       <SearchSidebar vibeTags={vibeTags} />
-      <LiveSearch client:load initialResults={initialResults} initialLists={initialLists} initialPeople={initialPeople} initialQuery={initialQuery} />
+      <LiveSearch initialResults={initialResults} initialLists={initialLists} initialPeople={initialPeople} initialQuery={initialQuery} />
     </div>
   </main>
 </Layout>

@@ -38,6 +38,16 @@ class ReviewController extends Controller
         return response()->json($review);
     }
 
+    // Mi reseña de una película (para pintar estrellas/botones con estado)
+    public function myReview(Request $request, $movieId)
+    {
+        $review = Review::where('user_id', $request->user()->id)
+            ->where('movie_id', $movieId)
+            ->first();
+
+        return response()->json($review);
+    }
+
     // Diario de un usuario: sus reseñas/vistas con película (para /diary)
     public function byUser($userId)
     {
@@ -63,16 +73,15 @@ class ReviewController extends Controller
 // updateOrCreate evita que un usuario deje 5 reseñas distintas a la misma película;
 // si ya la reseñó, simplemente actualiza su texto y calificación.
         $attrs = [
-            // Usamos input() para evitar chocar con la variable protegida interna de Symfony
-            'content' => $request->input('content'),
-            'rating' => $request->input('rating'),
             // input() permite un segundo parámetro que funciona como valor por defecto
             'has_spoilers' => $request->input('has_spoilers', false),
         ];
-        // watched_at solo se toca si viene en la petición (botón "Vista hoy",
-        // import Letterboxd). Así no se pisa con nulos al editar texto/nota.
-        if ($request->filled('watched_at')) {
-            $attrs['watched_at'] = $request->input('watched_at');
+        // content/rating/watched_at solo se tocan si vienen en la petición:
+        // así las estrellas no borran el texto ni el texto borra las estrellas.
+        foreach (['content', 'rating', 'watched_at'] as $field) {
+            if ($request->filled($field)) {
+                $attrs[$field] = $request->input($field);
+            }
         }
 
         $review = Review::updateOrCreate(
