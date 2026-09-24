@@ -17,7 +17,7 @@
           </circle>
         </svg>
         <span
-          v-for="p in dots.filter((d) => d.showLabel)"
+          v-for="p in dots"
           :key="'l-' + p.label"
           class="absolute font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap"
           :style="p.labelStyle"
