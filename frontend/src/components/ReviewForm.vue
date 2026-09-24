@@ -16,14 +16,9 @@
       <div v-if="success" class="p-3 rounded bg-primary-container text-on-primary-container text-sm">{{ success }}</div>
 
       <div class="flex items-center gap-2">
-        <label class="font-label-md text-label-md text-on-surface-variant">Calificación</label>
-        <select v-model.number="form.rating" class="rounded-full border border-outline-variant/50 bg-white px-4 py-2 font-body-md text-body-md">
-          <option :value="null">Sin nota</option>
-          <option v-for="n in [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]" :key="n" :value="n">{{ n }}</option>
-        </select>
-        <label class="ml-4 flex items-center gap-2 font-label-md text-label-md text-on-surface-variant">
+        <label class="flex items-center gap-2 font-label-md text-label-md text-on-surface-variant">
           <input type="checkbox" v-model="form.has_spoilers" class="accent-[#006a68]" />
-          Spoilers
+          Contiene spoilers
         </label>
       </div>
 
@@ -58,7 +53,6 @@ const error = ref(null);
 const success = ref(null);
 
 const form = reactive({
-  rating: null,
   content: '',
   has_spoilers: false,
 });
@@ -72,13 +66,11 @@ const handleSubmit = async () => {
   try {
     await api.post('/api/reviews', {
       movie_id: Number(props.movieId),
-      rating: form.rating,
       content: form.content || null,
       has_spoilers: form.has_spoilers,
     });
     success.value = 'Reseña guardada con éxito.';
     form.content = '';
-    form.rating = null;
   } catch (e) {
     console.error(e);
     error.value = e.response?.data?.message || 'No se pudo guardar la reseña.';

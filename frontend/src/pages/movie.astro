@@ -6,6 +6,7 @@ import MovieRatingStats from '../components/MovieRatingStats.vue';
 import Card from '../components/Card.vue';
 import ReviewForm from '../components/ReviewForm.vue';
 import MovieActions from '../components/MovieActions.vue';
+import MovieRating from '../components/MovieRating.vue';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 const movieId = Astro.url.searchParams.get('id');
@@ -85,7 +86,10 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
       </div>
     )}
     <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
-      <MoviePosterPanel poster={m.poster_path || m.poster} title={m.title} />
+      <div class="md:col-span-4 flex flex-col gap-6">
+        <MoviePosterPanel poster={m.poster_path || m.poster} title={m.title} />
+        {movieId && <MovieActions client:load movieId={movieId} movieTitle={m.title} />}
+      </div>
 
       <div class="md:col-span-8 flex flex-col gap-8">
         <div class="flex flex-col gap-2">
@@ -107,12 +111,12 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
           </div>
         </div>
 
-        <MovieActions client:load movieId={movieId} movieTitle={m.title} />
-
         <div class="pt-6 border-t border-outline-variant/30">
           <h3 class="font-headline-md text-headline-md mb-4 text-secondary">Sinopsis</h3>
           <p class="font-body-md text-body-md text-on-surface-variant">{m.overview || m.synopsis || 'Sin sinopsis todavía.'}</p>
         </div>
+
+        {movieId && <MovieRating client:load movieId={movieId} />}
 
         {cast.length > 0 && (
           <MovieCastList cast={cast} />
@@ -154,19 +158,6 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
           </div>
         )}
 
-        {similar.length > 0 && (
-          <div class="pt-6 border-t border-outline-variant/30">
-            <h3 class="font-headline-md text-headline-md mb-4 text-secondary">Similares</h3>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {similar.map((s) => (
-                <a href={`/movie?id=${s.id}`} class="group rounded-xl overflow-hidden ambient-shadow-secondary bg-white">
-                  {s.poster_path && <img alt={s.title} class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform" src={s.poster_path} />}
-                  <div class="p-3 font-label-md text-label-md text-on-surface">{s.title}</div>
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
 
@@ -202,5 +193,19 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
         ))}
       </div>
     </section>
+
+    {similar.length > 0 && (
+      <section class="mt-12 border-t border-outline-variant/30 pt-8">
+        <h2 class="font-headline-md text-headline-md mb-6 text-secondary">Similares</h2>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {similar.map((s) => (
+            <a href={`/movie?id=${s.id}`} class="group rounded-xl overflow-hidden ambient-shadow-secondary bg-white">
+              {s.poster_path && <img alt={s.title} class="w-full aspect-[2/3] object-cover group-hover:scale-105 transition-transform" src={s.poster_path} />}
+              <div class="p-3 font-label-md text-label-md text-on-surface">{s.title}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
   </main>
 </Layout>

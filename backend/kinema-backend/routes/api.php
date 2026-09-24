@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Reseñas: crear / editar / borrar (solo dueño)
     Route::post('/reviews', [ReviewController::class, 'store']);
     Route::get('/reviews', [ReviewController::class, 'indexAll']);
+    Route::get('/movies/{id}/my-review', [ReviewController::class, 'myReview']);
     Route::put('/reviews/{id}', [ReviewController::class, 'update']);
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
 

@@ -5,7 +5,6 @@ import Button from '../components/Button.vue';
 import FeedActivity from '../components/FeedActivity.vue';
 import AuthCtas from '../components/AuthCtas.vue';
 import Recommendations from '../components/Recommendations.vue';
-import SemanticMap from '../components/SemanticMap.vue';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -75,10 +74,6 @@ if (discoveryMovies.length === 0) {
           </a>
         ))}
       </div>
-    </section>
-
-    <section>
-      <SemanticMap client:load />
     </section>
 
     <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
