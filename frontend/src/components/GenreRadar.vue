@@ -5,7 +5,7 @@
       Sin datos de géneros.
     </div>
     <template v-else>
-      <div class="relative h-60 w-60">
+      <div class="relative w-full max-w-[460px] aspect-square">
         <div class="absolute inset-0 rounded-full border border-outline-variant/30"></div>
         <div class="absolute inset-4 rounded-full border border-outline-variant/30"></div>
         <div class="absolute inset-8 rounded-full border border-outline-variant/30"></div>
