@@ -45,8 +45,41 @@ class MovieController extends Controller
         // fail() devuelve automáticamente un error 404 si el ID no existe
         $movie = Movie::with('vibe')->findOrFail($id);
         $movie->rating_stats = $this->ratingStats((int) $id);
+        $movie->vibe_neighborhood = $this->vibeNeighborhood($movie);
 
         return response()->json($movie);
+    }
+
+    // Radar de vibras: distribución entre sus 20 vecinas por vector.
+    // La película pertenece a una vibra; esto muestra su contexto semántico.
+    protected function vibeNeighborhood(Movie $movie): array
+    {
+        if (!$movie->embedding) {
+            return [];
+        }
+
+        $neighbors = Movie::select('vibe_id')
+            ->with('vibe:id,name')
+            ->where('id', '!=', $movie->id)
+            ->whereNotNull('vibe_id')
+            ->orderByRaw('embedding <=> ?', [$movie->embedding])
+            ->take(20)
+            ->get();
+
+        $total = $neighbors->count() ?: 1;
+        $ownVibeId = $movie->vibe_id;
+
+        return $neighbors->groupBy('vibe_id')
+            ->map(fn ($group, $vibeId) => [
+                'id' => (int) $vibeId,
+                'name' => $group->first()->vibe->name ?? 'Sin nombre',
+                'count' => $group->count(),
+                'share' => round($group->count() / $total * 100, 1),
+                'is_own' => $ownVibeId !== null && (int) $vibeId === (int) $ownVibeId,
+            ])
+            ->sortByDesc('count')
+            ->values()
+            ->toArray();
     }
 
     // Distribución de calificaciones 0.5-5.0 para el histograma del frontend

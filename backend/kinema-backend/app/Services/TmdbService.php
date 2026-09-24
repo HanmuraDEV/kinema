@@ -54,6 +54,24 @@ class TmdbService
         return $this->pickBest($response->json('results', []), $title, $year);
     }
 
+    /**
+     * Ficha completa de TMDB (trae budget, revenue, runtime que el
+     * search no incluye). Devuelve null si falla.
+     */
+    public function details(int $tmdbId): ?array
+    {
+        if (!$this->configured()) {
+            return null;
+        }
+
+        $response = Http::timeout(15)->get("https://api.themoviedb.org/3/movie/{$tmdbId}", [
+            'api_key' => $this->apiKey,
+            'language' => 'en-US',
+        ]);
+
+        return $response->successful() ? $response->json() : null;
+    }
+
     protected function norm(string $s): string
     {
         $s = mb_strtolower($s);
@@ -106,6 +124,31 @@ class TmdbService
      */
     public function enrich(Movie $movie, bool $force = false): bool|string
     {
+        // Con tmdb_id conocido vamos directo al detalle (taquilla, runtime).
+        // No retornamos aún: si faltan datos básicos se sigue al search.
+        $touched = false;
+        if (!empty($movie->tmdb_id) && ($force || empty($movie->budget) || empty($movie->revenue) || empty($movie->runtime))) {
+            $detail = $this->details((int) $movie->tmdb_id);
+            if ($detail) {
+                $box = array_filter([
+                    'budget' => $detail['budget'] ?? null,
+                    'revenue' => $detail['revenue'] ?? null,
+                    'runtime' => $detail['runtime'] ?? null,
+                ], fn ($v) => !empty($v) || $v === 0);
+                if ($box) {
+                    $movie->update($box);
+                    $movie->refresh();
+                    $touched = true;
+                }
+            }
+        }
+
+        $needsBasic = $force || empty($movie->poster_path) || empty($movie->overview)
+            || empty($movie->release_date) || empty($movie->genres) || empty($movie->tmdb_id);
+        if (!$needsBasic) {
+            return $touched;
+        }
+
         $match = $this->search($movie->title, $movie->release_year ?? $this->yearFromDate($movie->release_date));
 
         if (!$match) {

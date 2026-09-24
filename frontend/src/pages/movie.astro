@@ -7,6 +7,14 @@ import Card from '../components/Card.vue';
 import ReviewForm from '../components/ReviewForm.vue';
 import MovieActions from '../components/MovieActions.vue';
 import MovieRating from '../components/MovieRating.vue';
+import GenreRadar from '../components/GenreRadar.vue';
+
+const money = (v) => {
+  if (v === null || v === undefined || v === 0) return null;
+  if (v >= 1_000_000_000) return `$${(v / 1_000_000_000).toFixed(1)}B`;
+  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(0)}M`;
+  return `$${Number(v).toLocaleString('en-US')}`;
+};
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 const movieId = Astro.url.searchParams.get('id');
@@ -160,6 +168,55 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
 
       </div>
     </div>
+
+    {(m.vibe_neighborhood?.length > 0 || (m.budget > 0 && m.revenue > 0)) && (
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter mt-8">
+        {m.vibe_neighborhood?.length > 0 && (
+          <div class="rounded-[24px] border border-outline-variant/20 bg-surface/60 p-6">
+            <GenreRadar title="Vibras cercanas" items={m.vibe_neighborhood} />
+            <p class="mt-2 text-center font-label-sm text-label-sm text-on-surface-variant">
+              {m.vibe ? `“${m.title}” vive en ${m.vibe.name}, entre estas vibras vecinas.` : 'Distribución de vibras entre sus 20 vecinas por vector.'}
+            </p>
+          </div>
+        )}
+        {(m.budget > 0 && m.revenue > 0) && (
+          <div class="rounded-[24px] border border-outline-variant/20 bg-surface/60 p-6 flex flex-col justify-center">
+            <h3 class="font-headline-md text-headline-md mb-4 text-secondary text-center">Taquilla mundial</h3>
+            {(() => {
+              const max = Math.max(m.budget, m.revenue);
+              const roi = m.budget > 0 ? (m.revenue / m.budget).toFixed(1) : null;
+              return (
+                <div class="space-y-4">
+                  <div>
+                    <div class="flex justify-between font-label-md text-label-md mb-1">
+                      <span class="text-on-surface-variant">Presupuesto</span>
+                      <span class="text-on-surface font-bold">{money(m.budget)}</span>
+                    </div>
+                    <div class="h-4 overflow-hidden rounded-full bg-surface-container-highest">
+                      <div class="h-full rounded-full bg-secondary/60" style={`width: ${Math.round((m.budget / max) * 100)}%`} />
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between font-label-md text-label-md mb-1">
+                      <span class="text-on-surface-variant">Recaudación</span>
+                      <span class="text-on-surface font-bold">{money(m.revenue)}</span>
+                    </div>
+                    <div class="h-4 overflow-hidden rounded-full bg-surface-container-highest">
+                      <div class="h-full rounded-full bg-primary" style={`width: ${Math.round((m.revenue / max) * 100)}%`} />
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center pt-1">
+                    {roi && <span class="font-label-md text-label-md text-primary">×{roi} retorno</span>}
+                    {m.runtime > 0 && <span class="font-label-sm text-label-sm text-on-surface-variant">{m.runtime} min</span>}
+                    <span class="font-label-sm text-label-sm text-on-surface-variant/70">Fuente: TMDB</span>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
+      </div>
+    )}
 
     <section class="mt-12 border-t border-outline-variant/30 pt-8">
       <div class="mb-6">

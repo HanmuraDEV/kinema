@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col items-center">
-    <h3 class="font-headline-md text-headline-md mb-2 text-secondary">Distribución de géneros</h3>
+    <h3 class="font-headline-md text-headline-md mb-2 text-secondary">{{ title }}</h3>
     <div v-if="items.length === 0" class="font-body-md text-body-md text-on-surface-variant py-8">
       Sin datos de géneros.
     </div>
@@ -38,6 +38,7 @@ import { computed } from 'vue';
 
 const props = defineProps({
   items: { type: Array, default: () => [] }, // [{name, share}]
+  title: { type: String, default: 'Distribución de géneros' },
 });
 
 const polar = (share, maxShare, index, total) => {
