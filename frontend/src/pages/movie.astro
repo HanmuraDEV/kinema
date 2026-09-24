@@ -129,12 +129,9 @@ const year = m.release_date ? String(m.release_date).slice(0, 4) : (m.year ?? ''
         {(m.vibe_neighborhood?.length > 0 || (m.budget > 0 && m.revenue > 0)) && (
           <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
             {m.vibe_neighborhood?.length > 0 && (
-              <div class="rounded-[24px] border border-outline-variant/20 bg-surface/60 p-6">
-                <GenreRadar title="Vibras cercanas" items={m.vibe_neighborhood} showTitle={false} showLegend={false} />
-                <p class="mt-2 text-center font-label-sm text-label-sm text-on-surface-variant">
-                  {m.vibe ? `“${m.title}” vive en ${m.vibe.name}, entre estas vibras vecinas.` : 'Distribución de vibras entre sus 20 vecinas por vector.'}
-                </p>
-              </div>
+          <div class="rounded-[24px] border border-outline-variant/20 bg-surface/60 p-6">
+            <GenreRadar title="Vibras cercanas" items={m.vibe_neighborhood} showTitle={false} showLegend={false} />
+          </div>
             )}
             {(m.budget > 0 && m.revenue > 0) && (
               <div class="rounded-[24px] border border-outline-variant/20 bg-surface/60 p-6 flex flex-col justify-center">
