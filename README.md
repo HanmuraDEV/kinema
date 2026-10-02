@@ -104,3 +104,10 @@ Sin cookies/CSRF (el middleware stateful de Sanctum se quitó a propósito).
 ## Git
 
 Ramas: `dev` (trabajo) → `master` (estable). Commits en español, cortos.
+
+## Documentación de análisis
+
+- `docs/SRS.md` — requisitos funcionales y no funcionales.
+- `docs/architecture.md` — contexto, contenedores, componentes y ADRs.
+- `docs/diagrams.md` — flujos, secuencias y matriz de permisos.
+- `docs/er.md` — modelo E-R, diccionario y reglas de integridad.
