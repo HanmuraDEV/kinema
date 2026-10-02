@@ -104,7 +104,7 @@ series/TV (TMDB solo endpoint de películas).
 
 | ID | Requisito | Estado medido |
 |---|---|---|
-| RNF-01 | API p95 < 1s en red local | `/up` 0.014s, `/movies` 0.1s, search 0.05s ✅ |
+| RNF-01 | API p95 inferior a 1 s en red local | `/up` 0.014s, `/movies` 0.1s, search 0.05s ✅ |
 | RNF-02 | Secretos fuera de git | `.env` ignorados; `opencode.json` solo `{env:...}` ✅ |
 | RNF-03 | Sin N+1 críticos | `with`/`withCount` en listados ✅ |
 | RNF-04 | Degradación elegante | Fallbacks a mock si el API cae; 404/403 JSON ✅ |
